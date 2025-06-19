@@ -7,7 +7,7 @@ def generate_prompt_modern_text():
     ]
     
     primary_topics = [
-        "la vie quotidienne", "les études", "les amis", "le travail", "le sport", "les loisirs", "la famille",
+        "la vie quotidienne", "les études", "le pipi ou le caca", "les amis", "le travail", "le sport", "les loisirs", "la famille",
         "les voyages", "les repas", "la météo", "les émotions", "une rencontre", "la technologie", "le logement",
         "une habitude", "une dispute", "une fête", "un souvenir marquant", "le transport", "une passion", "les problèmes intestinaux",
         "un animal"
@@ -51,7 +51,7 @@ def generate_prompt_modern_text():
         f"Écris ce texte comme si tu étais {persona}. "
         f"Utilise le vocabulaire, les expressions et le style d'écriture typiques de cette personne. "
         f"Fais en sorte que le texte soit personnel et qu'il semble authentique. "
-        f"Si tu as besoin d'un nom invente le."
+        f"Si tu as besoin d'un nom invente le. "
         f"Le texte doit être en français et faire entre 2 et 4 phrases."
     )
     
