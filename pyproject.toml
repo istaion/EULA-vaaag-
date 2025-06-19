@@ -1,4 +1,4 @@
-8[project]
+[project]
 name = "eula-vaaag"
 version = "0.1.0"
 description = "Ecriver une lettre à votre arrière arrière arrière grand-mère"
@@ -14,7 +14,8 @@ dependencies = [
     "torch (>=1.0.2,<2.0.0)",
     "tensorflow (>=2.19.0,<3.0.0)",
     "ipykernel (>=6.29.5,<7.0.0)",
-    "pyarrow (>=20.0.0,<21.0.0)"
+    "pyarrow (>=20.0.0,<21.0.0)",
+    "nltk (>=3.9.1,<4.0.0)"
 ]
 
 [tool.poetry]
