@@ -198,3 +198,6 @@ poetry.lock
 *t5-old-french
 *t5-old-french-final
 *model_save
+.log*
+logs/
+results/
