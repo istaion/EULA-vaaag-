@@ -193,3 +193,7 @@ cython_debug/
 .cursorignore
 .cursorindexingignore
 
+poetry.lock
+.log*
+logs/
+results/
