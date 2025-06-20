@@ -195,3 +195,6 @@ cython_debug/
 
 poetry.lock
 *log*
+*t5-old-french
+*t5-old-french-final
+*model_save
