@@ -19,7 +19,7 @@ def generate_prompt_old_french_translation(modern_text):
         f"Ne réponds qu'avec le texte traduit, sans introduction.\n\nTexte à traduire :\n\"{modern_text}\"\n\nTraduction :"
     )
 
-def call_groq_chat(prompt, model="llama3-8b-8192", temperature=0.8, max_tokens=400, max_retries=3):
+def call_groq_chat(prompt, model="gemma2-9b-it", temperature=0.8, max_tokens=400, max_retries=3):
     url = "https://api.groq.com/openai/v1/chat/completions"
     headers = {
         "Authorization": f"Bearer {GROQ_API_KEY}",
@@ -80,14 +80,14 @@ def generate_dataset_entry(model_provider="openai", model_name="gpt-4o"):
     modern_prompt = generate_prompt_modern_text()
     print(f"[Prompt moderne]\n{modern_prompt}\n")
     
-    modern_text = call_groq_chat(modern_prompt, model="llama3-8b-8192")
+    modern_text = call_groq_chat(modern_prompt, model="gemma2-9b-it")
     print(f"[Texte moderne généré]\n{modern_text}\n")
     
     translation_prompt = generate_prompt_old_french_translation(modern_text)
     print(f"[Prompt traduction]\n{translation_prompt}\n")
     
     if model_provider == "groq":
-        old_french_text = call_groq_chat(translation_prompt, model="llama3-8b-8192")
+        old_french_text = call_groq_chat(translation_prompt, model="gemma2-9b-it")
     elif model_provider == "openai":
         old_french_text = call_gpt_chat(translation_prompt, model=model_name)
     
