@@ -16,7 +16,12 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from ask_ur_16th_mommy.views import HomeView
+
+app_name = 'eula_vaaagr'
 
 urlpatterns = [
+    path('', HomeView.as_view(), name='home'),
     path('admin/', admin.site.urls),
 ]
+
