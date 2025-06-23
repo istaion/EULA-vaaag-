@@ -11,7 +11,7 @@ import shutil
 MODEL_NAME = "facebook/mbart-large-50"
 MAX_LEN = 1024
 BATCH_SIZE = 6
-EPOCHS = 5
+EPOCHS = 2
 LR = 5e-5
 OUTPUT_DIR = f"/workspace/mbart_model_{datetime.now().strftime('%H%M')}"
 DATASET_PATH = "notebooks/Vic/cleaned_data.csv"
