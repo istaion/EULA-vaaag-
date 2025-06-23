@@ -13,7 +13,7 @@ MAX_LEN = 1024
 BATCH_SIZE = 6
 EPOCHS = 5
 LR = 5e-5
-OUTPUT_DIR = f"/kaggle/working/mbart_model_{datetime.now().strftime('%H%M')}"
+OUTPUT_DIR = f"/model/mbart_model_{datetime.now().strftime('%H%M')}"
 DATASET_PATH = "notebooks/Vic/cleaned_data.csv"
 
 # ========== GPU Check ==========
