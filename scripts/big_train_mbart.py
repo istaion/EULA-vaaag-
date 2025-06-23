@@ -13,7 +13,7 @@ MAX_LEN = 1024
 BATCH_SIZE = 6
 EPOCHS = 5
 LR = 5e-5
-OUTPUT_DIR = f"/model/mbart_model_{datetime.now().strftime('%H%M')}"
+OUTPUT_DIR = f"/workspace/mbart_model_{datetime.now().strftime('%H%M')}"
 DATASET_PATH = "notebooks/Vic/cleaned_data.csv"
 
 # ========== GPU Check ==========
@@ -95,7 +95,7 @@ training_args = TrainingArguments(
     per_device_eval_batch_size=BATCH_SIZE,
     num_train_epochs=EPOCHS,
     eval_strategy="epoch",
-    save_strategy="epoch",
+    save_strategy="no",
     logging_steps=5,
     save_total_limit=1,
     learning_rate=LR,
@@ -146,4 +146,4 @@ shutil.make_archive(OUTPUT_DIR, 'zip', OUTPUT_DIR)
 
 # === AFFICHER LIEN DE TÉLÉCHARGEMENT ===
 print(f"📥 Vous pouvez télécharger le modèle ici :")
-print(f"/kaggle/working/{os.path.basename(zip_path)}")
+print(f"/workspace/{os.path.basename(zip_path)}")
