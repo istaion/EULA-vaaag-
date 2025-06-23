@@ -10,7 +10,7 @@ import shutil
 # ========== CONFIG ==========
 MODEL_NAME = "facebook/mbart-large-50"
 MAX_LEN = 128
-BATCH_SIZE = 2
+BATCH_SIZE = 6
 EPOCHS = 5
 LR = 5e-5
 OUTPUT_DIR = f"/kaggle/working/mbart_model_{datetime.now().strftime('%H%M')}"
