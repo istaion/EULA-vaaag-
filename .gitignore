@@ -202,3 +202,4 @@ poetry.lock
 logs/
 results/
 marianmt-vieux-francais*
+model/local_f5tts/
