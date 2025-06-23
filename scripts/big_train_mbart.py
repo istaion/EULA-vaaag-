@@ -9,7 +9,7 @@ import shutil
 
 # ========== CONFIG ==========
 MODEL_NAME = "facebook/mbart-large-50"
-MAX_LEN = 128
+MAX_LEN = 1024
 BATCH_SIZE = 6
 EPOCHS = 5
 LR = 5e-5
