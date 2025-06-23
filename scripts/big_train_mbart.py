@@ -16,9 +16,10 @@ LR = 5e-5
 OUTPUT_DIR = f"/workspace/mbart_model_{datetime.now().strftime('%H%M')}"
 DATASET_PATH = "notebooks/Vic/cleaned_data.csv"
 
+
 # ========== GPU Check ==========
 if not torch.cuda.is_available():
-    raise EnvironmentError("🚨 GPU non disponible ! Activez le GPU T4 dans les paramètres Kaggle.")
+    raise EnvironmentError("🚨 GPU non disponible !")
 print("✅ GPU disponible :", torch.cuda.get_device_name(0))
 
 # ========== Dataset Load ==========
@@ -47,7 +48,6 @@ class TranslationDataset(Dataset):
         src = self.source_texts[idx]
         tgt = self.target_texts[idx]
 
-        # Tokenisation séparée
         inputs = self.tokenizer(
             src,
             max_length=self.max_length,
@@ -66,8 +66,6 @@ class TranslationDataset(Dataset):
         input_ids = inputs["input_ids"].squeeze()
         attention_mask = inputs["attention_mask"].squeeze()
         labels = targets["input_ids"].squeeze()
-
-        # Ignorer les tokens PAD dans les labels
         labels[labels == self.tokenizer.pad_token_id] = -100
 
         return {
@@ -76,11 +74,11 @@ class TranslationDataset(Dataset):
             "labels": labels
         }
 
-
 # ========== Tokenizer / Model ==========
 tokenizer = MBart50Tokenizer.from_pretrained(MODEL_NAME)
 tokenizer.src_lang = "fr_XX"
-model = MBartForConditionalGeneration.from_pretrained(MODEL_NAME, use_safetensors=True)
+
+model = MBartForConditionalGeneration.from_pretrained(MODEL_NAME)
 model.config.forced_bos_token_id = tokenizer.lang_code_to_id["fr_XX"]
 model.to("cuda")
 
@@ -94,8 +92,8 @@ training_args = TrainingArguments(
     per_device_train_batch_size=BATCH_SIZE,
     per_device_eval_batch_size=BATCH_SIZE,
     num_train_epochs=EPOCHS,
-    evaluation_strategy="epoch",
-    save_strategy="no",
+    evaluation_strategy="epoch",   # ✅ bon argument pour versions < 4.30
+    save_strategy="no",            # pour éviter crash DTensor
     logging_steps=5,
     save_total_limit=1,
     learning_rate=LR,
@@ -103,8 +101,7 @@ training_args = TrainingArguments(
     weight_decay=0.01,
     logging_dir=f"{OUTPUT_DIR}/logs",
     report_to="none",
-    fp16=True,
-    gradient_checkpointing=True
+    fp16=True
 )
 
 # ========== Trainer ==========
@@ -120,30 +117,13 @@ print("\n🚀 Lancement de l'entraînement MBART...")
 trainer.train()
 print("\n✅ Entraînement terminé.")
 
-# ========== Sauvegarde ==========
+# ========== Sauvegarde MANUELLE ==========
 print(f"\n💾 Sauvegarde du modèle dans : {OUTPUT_DIR}")
-trainer.save_model(OUTPUT_DIR)
+torch.save(model.state_dict(), os.path.join(OUTPUT_DIR, "pytorch_model.bin"))
+model.config.save_pretrained(OUTPUT_DIR)
 tokenizer.save_pretrained(OUTPUT_DIR)
 
-# ========== Génération Test ==========
-print("\n🧪 Test de génération:")
-test_input = "Bonjour, comment allez-vous ?"
-inputs = tokenizer(test_input, return_tensors="pt", max_length=MAX_LEN, truncation=True).to("cuda")
-
-with torch.no_grad():
-    outputs = model.generate(
-        **inputs,
-        max_length=MAX_LEN,
-        num_beams=4,
-        forced_bos_token_id=tokenizer.lang_code_to_id["fr_XX"]
-    )
-    print("📝 Résultat:", tokenizer.decode(outputs[0], skip_special_tokens=True))
-
-# === COMPRESSION DU DOSSIER DU MODÈLE ===
+# ========== Compression ==========
 zip_path = f"{OUTPUT_DIR}.zip"
-print(f"📦 Compression du modèle en : {zip_path}")
 shutil.make_archive(OUTPUT_DIR, 'zip', OUTPUT_DIR)
-
-# === AFFICHER LIEN DE TÉLÉCHARGEMENT ===
-print(f"📥 Vous pouvez télécharger le modèle ici :")
-print(f"/workspace/{os.path.basename(zip_path)}")
+print(f"📦 Archive créée : {zip_path}")
