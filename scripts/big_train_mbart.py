@@ -80,7 +80,7 @@ class TranslationDataset(Dataset):
 # ========== Tokenizer / Model ==========
 tokenizer = MBart50Tokenizer.from_pretrained(MODEL_NAME)
 tokenizer.src_lang = "fr_XX"
-model = MBartForConditionalGeneration.from_pretrained(MODEL_NAME)
+model = MBartForConditionalGeneration.from_pretrained(MODEL_NAME, use_safetensors=True)
 model.config.forced_bos_token_id = tokenizer.lang_code_to_id["fr_XX"]
 model.to("cuda")
 
