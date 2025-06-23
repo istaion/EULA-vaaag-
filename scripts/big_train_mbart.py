@@ -3,7 +3,7 @@ import torch
 import pandas as pd
 from datetime import datetime
 from sklearn.model_selection import train_test_split
-from transformers import MBartForConditionalGeneration, MBart50TokenizerFast, Trainer, TrainingArguments
+from transformers import MBartForConditionalGeneration, MBart50Tokenizer, Trainer, TrainingArguments
 from torch.utils.data import Dataset
 import shutil
 
@@ -78,7 +78,7 @@ class TranslationDataset(Dataset):
 
 
 # ========== Tokenizer / Model ==========
-tokenizer = MBart50TokenizerFast.from_pretrained(MODEL_NAME)
+tokenizer = MBart50Tokenizer.from_pretrained(MODEL_NAME)
 tokenizer.src_lang = "fr_XX"
 model = MBartForConditionalGeneration.from_pretrained(MODEL_NAME)
 model.config.forced_bos_token_id = tokenizer.lang_code_to_id["fr_XX"]
