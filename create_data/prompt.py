@@ -53,6 +53,8 @@ def generate_prompt_modern_text():
         f"Fais en sorte que le texte soit personnel et qu'il semble authentique. "
         f"Si tu as besoin d'un nom invente le. "
         f"Le texte doit être en français et faire entre 2 et 4 phrases."
+        f"Ne réponds qu'avec le texte, sans introduction ni note."
+        f"\n\nTexte :"
     )
     
     return prompt

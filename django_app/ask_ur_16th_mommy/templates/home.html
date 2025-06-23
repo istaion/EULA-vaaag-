@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EULA VAAAGr - Écrivez une lettre à votre arrière arrière arrière grand-mère</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Crimson+Text:wght@400;600;700&family=Playfair+Display:wght@400;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Crimson Text', serif;
+            background-color: #f5f1e8;
+            color: #4a3429;
+            line-height: 1.6;
+        }
+        
+        /* Header avec bannière */
+        .header {
+            background: linear-gradient(135deg, #e8dcc0 0%, #d4c4a0 100%);
+            border-bottom: 3px solid #8b6f47;
+            padding: 2rem 0;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            padding: 0 2rem;
+        }
+        
+        .logo-container {
+            flex-shrink: 0;
+        }
+        
+        .horse-icon {
+            width: 80px;
+            height: 80px;
+            background-color: #4a3429;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        
+        .horse-icon::before {
+            content: "🐎";
+            font-size: 2.5rem;
+            filter: sepia(1) hue-rotate(20deg) brightness(0.8);
+        }
+        
+        .title-section {
+            flex-grow: 1;
+        }
+        
+        .main-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: #4a3429;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .subtitle {
+            font-size: 1.3rem;
+            color: #6b5b4f;
+            font-style: italic;
+            font-weight: 400;
+        }
+        
+        /* Contenu principal */
+        .main-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+        
+        .intro-text {
+            text-align: center;
+            font-size: 1.2rem;
+            color: #6b5b4f;
+            margin-bottom: 3rem;
+            font-style: italic;
+        }
+        
+        .form-container {
+            background: #ffffff;
+            border-radius: 15px;
+            padding: 3rem;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            border: 2px solid #d4c4a0;
+        }
+        
+        .form-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            color: #4a3429;
+            text-align: center;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+        
+        .form-title::after {
+            content: '';
+            display: block;
+            width: 80px;
+            height: 3px;
+            background: #8b6f47;
+            margin: 1rem auto;
+        }
+        
+        .form-group {
+            margin-bottom: 2rem;
+        }
+        
+        .form-label {
+            display: block;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #4a3429;
+            margin-bottom: 0.8rem;
+        }
+        
+        .form-input, .form-textarea, .form-select {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #d4c4a0;
+            border-radius: 8px;
+            font-family: 'Crimson Text', serif;
+            font-size: 1rem;
+            background-color: #fefdfb;
+            transition: all 0.3s ease;
+        }
+        
+        .form-input:focus, .form-textarea:focus, .form-select:focus {
+            outline: none;
+            border-color: #8b6f47;
+            box-shadow: 0 0 0 3px rgba(139, 111, 71, 0.1);
+        }
+        
+        .form-textarea {
+            min-height: 200px;
+            resize: vertical;
+        }
+        
+        .form-select {
+            cursor: pointer;
+        }
+        
+        .submit-btn {
+            width: 100%;
+            padding: 1.2rem 2rem;
+            background: linear-gradient(135deg, #8b6f47 0%, #6b5b4f 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-family: 'Playfair Display', serif;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(139, 111, 71, 0.3);
+            background: linear-gradient(135deg, #6b5b4f 0%, #4a3429 100%);
+        }
+        
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+        
+        /* Footer */
+        .footer {
+            background-color: #4a3429;
+            color: #d4c4a0;
+            text-align: center;
+            padding: 2rem;
+            margin-top: 4rem;
+        }
+        
+        .footer p {
+            font-style: italic;
+            opacity: 0.8;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+                gap: 1rem;
+            }
+            
+            .main-title {
+                font-size: 2.5rem;
+            }
+            
+            .subtitle {
+                font-size: 1.1rem;
+            }
+            
+            .main-container {
+                padding: 2rem 1rem;
+            }
+            
+            .form-container {
+                padding: 2rem;
+            }
+        }
+        
+        /* Animation subtile */
+        .form-container {
+            animation: fadeInUp 0.6s ease-out;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header avec bannière -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo-container">
+                <div class="horse-icon"></div>
+            </div>
+            <div class="title-section">
+                <h1 class="main-title">EULA VAAAGr</h1>
+                <p class="subtitle">Écrivez une lettre à votre arrière arrière arrière grand-mère</p>
+            </div>
+        </div>
+    </header>
+
+    <!-- Contenu principal -->
+    <main class="main-container">
+        <p class="intro-text">
+            Transformez vos mots modernes en français d'antan pour correspondre avec vos aïeules
+        </p>
+
+        <div class="form-container">
+            <h2 class="form-title">Rédigez votre missive</h2>
+            
+            <form method="post" action="">
+                {% csrf_token %}
+                
+                <div class="form-group">
+                    <label for="text_input" class="form-label">Votre texte à traduire :</label>
+                    <textarea 
+                        id="text_input" 
+                        name="text_input" 
+                        class="form-textarea" 
+                        placeholder="Écrivez ici le texte que vous souhaitez transformer en vieux français..."
+                        required>{{ text_input|default:"" }}</textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="translation_model" class="form-label">Modèle de traduction :</label>
+                    <select id="translation_model" name="translation_model" class="form-select" required>
+                        <option value="">Choisissez un modèle...</option>
+                        <option value="mBart" {% if translation_model == 'mBart' %}selected{% endif %}>mBart</option>
+                        <option value="API" {% if translation_model == 'API' %}selected{% endif %}>openAI API</option>
+                        <option value="opus" {% if translation_model == 'opus' %}selected{% endif %}>Helsinki-NLP/opus-mt-fr-en</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="submit-btn">
+                    Transformer en vieux françois
+                </button>
+            </form>
+
+            {% if translated_text %}
+            <div style="margin-top: 2rem; padding: 2rem; background: #f9f7f1; border-left: 4px solid #8b6f47; border-radius: 0 8px 8px 0;">
+                <h3 style="color: #4a3429; margin-bottom: 1rem; font-family: 'Playfair Display', serif;">Votre texte transformé :</h3>
+                <div style="font-size: 1.1rem; line-height: 1.8; color: #6b5b4f; font-style: italic;">
+                    {{ translated_text|linebreaks }}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>« Le temps passe, mais les mots demeurent » - EULA VAAAGr</p>
+    </footer>
+</body>
+</html>
