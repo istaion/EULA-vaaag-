@@ -9,9 +9,9 @@ import shutil
 
 # ========== CONFIG ==========
 MODEL_NAME = "facebook/mbart-large-50"
-MAX_LEN = 1024
+MAX_LEN = 64
 BATCH_SIZE = 6
-EPOCHS = 2
+EPOCHS = 1
 LR = 5e-5
 OUTPUT_DIR = f"/workspace/mbart_model_{datetime.now().strftime('%H%M')}"
 DATASET_PATH = "notebooks/Vic/cleaned_data.csv"
