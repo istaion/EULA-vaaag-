@@ -109,7 +109,7 @@ class GenerateAudioView(TemplateView):
         
         try:
             # Créer le dossier pour les fichiers audio s'il n'existe pas
-            audio_dir = os.path.join('media', 'audio')
+            audio_dir = os.path.join('../media', 'audio')
             os.makedirs(audio_dir, exist_ok=True)
             print(f"Dossier audio créé/vérifié : {audio_dir}")
             
@@ -191,21 +191,3 @@ class GenerateAudioView(TemplateView):
             import traceback
             print(traceback.format_exc())
             return None
-
-
-# urls.py
-from django.urls import path
-from django.conf import settings
-from django.conf.urls.static import static
-from .views import HomeView, GenerateAudioView
-
-app_name = 'ask_ur_16th_mommy'
-
-urlpatterns = [
-    path('', HomeView.as_view(), name='home'),
-    path('generate-audio/', GenerateAudioView.as_view(), name='generate_audio'),
-]
-
-# Ajouter pour servir les fichiers media en développement
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
