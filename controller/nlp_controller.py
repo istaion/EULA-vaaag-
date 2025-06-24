@@ -1,5 +1,5 @@
 import torch
-from transformers import MarianMTModel, MarianTokenizer
+from transformers import MarianMTModel, MarianTokenizer MBartForConditionalGeneration, MBart50Tokenizer
 from TTS.api import TTS
 from TTS.tts.configs.xtts_config import XttsConfig
 import os
@@ -16,6 +16,44 @@ def load_model(model_path = "model/marianmt-vieux-francais-model2") :
     tokenizer = MarianTokenizer.from_pretrained(model_path)
     return model, tokenizer
 
+
+# Chargement du modèle et du tokenizer fine-tunés mBART
+def load_mbart_model(model_path="model/mbart/mbart_model_0928"):
+    
+    model = MBartForConditionalGeneration.from_pretrained(model_path)
+    tokenizer = MBart50Tokenizer.from_pretrained(model_path)
+    tokenizer.src_lang = "fr_XX"
+    model.config.forced_bos_token_id = tokenizer.lang_code_to_id["fr_XX"]
+    return model, tokenizer
+
+
+# fonction de traduction mBART
+def generate_translation_mbart(text, model, tokenizer, device=None):
+    
+    if device is None:
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    model = model.to(device)
+    model.eval()
+    
+    # Tokenisation avec mBART
+    inputs = tokenizer(
+        text,
+        return_tensors="pt",
+        max_length=1024,
+        truncation=True,
+        padding=True
+    )
+    inputs = {k: v.to(device) for k, v in inputs.items()}
+    
+    with torch.no_grad():
+        generated_tokens = model.generate(
+            **inputs,
+            max_length=400,
+            num_beams=4,
+            forced_bos_token_id=tokenizer.lang_code_to_id["fr_XX"]
+        )
+    
+    return tokenizer.decode(generated_tokens[0], skip_special_tokens=True)
 
 # fonction de traduction
 def generate_translation_marian(text, model, tokenizer, device=None):

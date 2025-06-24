@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.views.generic import TemplateView
 from ask_ur_16th_mommy.forms import TranslationForm
 from ask_ur_16th_mommy.controllers import load_mbart_model, translate_with_mbart
+import httpx
 
 class HomeView(TemplateView):
     template_name = 'home.html'
@@ -39,6 +40,22 @@ class HomeView(TemplateView):
         Fonction de traduction - à remplacer par votre logique métier
         """
         if model == "mBart":
-            text = translate_with_mbart("../scripts/mbart_fast_1339", text)["text"]
+            response = httpx.post(
+                "http://localhost:8000/translate_mbart", 
+                json={"text": text},
+                timeout=10.0
+            )
+            if response.status_code != 200:
+                raise RuntimeError(f"Erreur de traduction OPUS: {response.text}")
+            text = response.json()["translation"]
+        elif model == "opus":
+            response = httpx.post(
+                "http://localhost:8000/translate", 
+                json={"text": text},
+                timeout=10.0
+            )
+            if response.status_code != 200:
+                raise RuntimeError(f"Erreur de traduction OPUS: {response.text}")
+            text = response.json()["translation"]
         return text
 

@@ -203,6 +203,7 @@ logs/
 results/
 scripts/mbart_fast*
 marianmt-vieux-francais*
+mbart_model*
 model/local_f5tts/
 controller/voices/*.wav
 *test.py
