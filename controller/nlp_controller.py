@@ -103,9 +103,21 @@ def read_audio(audio_path) :
     playsound(audio_path)
 
 
+def extract_sound_sample(sound_path, save_name):
+    try:
+        result = subprocess.run(
+            ["ffmpeg", "-y", "-i", sound_path, "-ss", "00:00:01", "-t", "8", "-ac", "1", "-ar", "24000", f"{save_name}.wav"],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL
+        )
+        if result.returncode == 0:
+            return "Échantillon enregistré avec succès !"
+        else:
+            return "Échec lors de l'enregistrement de l'échantillon"
+    except FileNotFoundError:
+        return "Erreur : ffmpeg n'est pas installé"
+    
 
-
-# read_audio("cartman.wav")
 
 
     # modern_dir = "modern_fr_text_sound"
