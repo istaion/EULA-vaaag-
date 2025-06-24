@@ -6,6 +6,7 @@ from controller.nlp_controller import load_model, generate_translation_marian
 router = APIRouter()
 
 class TranslationRequest(BaseModel):
+    # text: f"""{str}"""
     text: str
 
 class TranslationResponse(BaseModel):

@@ -205,3 +205,4 @@ marianmt-vieux-francais*
 model/local_f5tts/
 controller/voices/*.wav
 *test.py
+*.wav
