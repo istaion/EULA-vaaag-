@@ -18,6 +18,10 @@ from django.contrib import admin
 from django.urls import path
 from ask_ur_16th_mommy.views import HomeView, GenerateAudioView
 
+from django.conf import settings  # ✅ nécessaire
+from django.conf.urls.static import static  # ✅ nécessaire
+
+
 app_name = 'eula_vaaagr'
 
 urlpatterns = [
@@ -26,6 +30,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
 ]
 
-# if settings.DEBUG:
-#     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
