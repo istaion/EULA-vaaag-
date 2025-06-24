@@ -194,7 +194,16 @@ cython_debug/
 .cursorindexingignore
 
 poetry.lock
+*log*
+*t5-old-french
+*t5-old-french-final
+*model_save
 .log*
 logs/
 results/
 scripts/mbart_fast*
+marianmt-vieux-francais*
+model/local_f5tts/
+controller/voices/*.wav
+*test.py
+*.wav
