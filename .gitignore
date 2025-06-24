@@ -206,5 +206,7 @@ marianmt-vieux-francais*
 mbart_model*
 model/local_f5tts/
 controller/voices/*.wav
+controller/voices/*.mp3
 *test.py
 *.wav
+notes.txt
