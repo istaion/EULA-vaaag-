@@ -208,3 +208,5 @@ controller/voices/*.mp3
 *test.py
 *.wav
 notes.txt
+scripts/mbart_fast*
+notebooks/Vic/first_model.ipynb
