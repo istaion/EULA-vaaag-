@@ -9,9 +9,9 @@ import shutil
 
 # ========== CONFIG ==========
 MODEL_NAME = "facebook/mbart-large-50"
-MAX_LEN = 64
+MAX_LEN = 1024
 BATCH_SIZE = 6
-EPOCHS = 1
+EPOCHS = 5
 LR = 5e-5
 OUTPUT_DIR = f"/workspace/mbart_model_{datetime.now().strftime('%H%M')}"
 DATASET_PATH = "notebooks/Vic/cleaned_data.csv"
@@ -120,10 +120,14 @@ print("\n✅ Entraînement terminé.")
 # ========== Sauvegarde MANUELLE ==========
 print(f"\n💾 Sauvegarde du modèle dans : {OUTPUT_DIR}")
 torch.save(model.state_dict(), os.path.join(OUTPUT_DIR, "pytorch_model.bin"))
+print("torch save")
 model.config.save_pretrained(OUTPUT_DIR)
+print("config save")
 tokenizer.save_pretrained(OUTPUT_DIR)
+print("tokenizer save")
 
 # ========== Compression ==========
 zip_path = f"{OUTPUT_DIR}.zip"
+print("compression...")
 shutil.make_archive(OUTPUT_DIR, 'zip', OUTPUT_DIR)
 print(f"📦 Archive créée : {zip_path}")

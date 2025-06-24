@@ -16,12 +16,20 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from ask_ur_16th_mommy.views import HomeView
+from ask_ur_16th_mommy.views import HomeView, GenerateAudioView
+
+from django.conf import settings  # ✅ nécessaire
+from django.conf.urls.static import static  # ✅ nécessaire
+
 
 app_name = 'eula_vaaagr'
 
 urlpatterns = [
     path('', HomeView.as_view(), name='home'),
+    path('generate-audio/', GenerateAudioView.as_view(), name='generate_audio'),
     path('admin/', admin.site.urls),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

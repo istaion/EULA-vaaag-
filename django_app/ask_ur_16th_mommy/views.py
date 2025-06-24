@@ -1,14 +1,43 @@
-from django.shortcuts import render
+import os
+from django.shortcuts import render, redirect
 from django.views.generic import TemplateView
 from ask_ur_16th_mommy.forms import TranslationForm
 from ask_ur_16th_mommy.controllers import load_mbart_model, translate_with_mbart
+from django.http import JsonResponse, HttpResponse
+from django.urls import reverse
+from django.contrib import messages
+import httpx
+import sys
+
+# Ajouter le chemin vers le controller
+sys.path.append(os.path.join(os.path.dirname(os.path.dirname(__file__)), '../controller'))
+from nlp_controller import generate_audio, read_audio
 
 class HomeView(TemplateView):
     template_name = 'home.html'
     
+    def get_available_voices(self):
+        """Récupère la liste des voix disponibles"""
+        voices_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), '../controller', 'voices')
+        print(f"Recherche des voix dans : {voices_dir}")
+        if os.path.exists(voices_dir):
+            voices = [f[:-4] for f in os.listdir(voices_dir) if f.lower().endswith(".wav")]
+            print(f"Voix trouvées : {voices}")
+            return voices
+        else:
+            print("Dossier voices non trouvé")
+            return []
+    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['form'] = TranslationForm()
+        context['available_voices'] = self.get_available_voices()
+        
+        # Récupérer les données de la session si elles existent
+        context['translated_text'] = self.request.session.get('translated_text', '')
+        context['selected_voice'] = self.request.session.get('selected_voice', '')
+        context['audio_file'] = self.request.session.get('audio_file', '')
+        
         return context
     
     def post(self, request, *args, **kwargs):
@@ -19,15 +48,19 @@ class HomeView(TemplateView):
             text_input = form.cleaned_data['text_input']
             translation_model = form.cleaned_data['translation_model']
             
-            # Ici vous pouvez intégrer votre logique de traduction
-            # Par exemple avec une API ou un modèle de ML
             translated_text = self.translate_text(text_input, translation_model)
+            
+            # Stocker dans la session pour la génération audio
+            request.session['translated_text'] = translated_text
+            request.session['text_input'] = text_input
+            request.session['translation_model'] = translation_model
             
             context.update({
                 'form': form,
                 'text_input': text_input,
                 'translation_model': translation_model,
-                'translated_text': translated_text
+                'translated_text': translated_text,
+                'available_voices': self.get_available_voices()
             })
         else:
             context['form'] = form
@@ -36,9 +69,143 @@ class HomeView(TemplateView):
     
     def translate_text(self, text, model):
         """
-        Fonction de traduction - à remplacer par votre logique métier
+        Fonction de traduction utilisant votre logique existante
         """
         if model == "mBart":
-            text = translate_with_mbart("../scripts/mbart_fast_1339", text)["text"]
+            response = httpx.post(
+                "http://localhost:8000/translate_mbart", 
+                json={"text": text},
+                timeout=10.0
+            )
+            if response.status_code != 200:
+                raise RuntimeError(f"Erreur de traduction OPUS: {response.text}")
+            text = response.json()["translation"]
+        elif model == "opus":
+            response = httpx.post(
+                "http://localhost:8000/translate", 
+                json={"text": text},
+                timeout=10.0
+            )
+            if response.status_code != 200:
+                raise RuntimeError(f"Erreur de traduction OPUS: {response.text}")
+            text = response.json()["translation"]
         return text
 
+
+class GenerateAudioView(TemplateView):
+    template_name = 'home.html'
+    
+    def post(self, request, *args, **kwargs):
+        print("=== POST GenerateAudioView ===")
+        translated_text = request.POST.get('translated_text', '')
+        voice_selection = request.POST.get('voice_selection', '')
+        
+        print(f"Translated text: {translated_text[:50]}...")
+        print(f"Voice selection: {voice_selection}")
+        
+        if not translated_text or not voice_selection:
+            messages.error(request, "Texte ou voix manquant.")
+            return redirect('home')
+        
+        try:
+            # Créer le dossier pour les fichiers audio s'il n'existe pas
+            audio_dir = os.path.join('media', 'audio')
+            os.makedirs(audio_dir, exist_ok=True)
+            print(f"Dossier audio créé/vérifié : {audio_dir}")
+            
+            # Nom du fichier unique basé sur le timestamp
+            import time
+            file_name = f"audio_{int(time.time())}"
+            
+            # Générer l'audio avec la fonction adaptée
+            audio_path = self.generate_audio_with_voice(
+                translated_text, 
+                audio_dir, 
+                file_name, 
+                voice_selection
+            )
+            
+            if audio_path:
+                # Stocker les informations dans la session pour les récupérer
+                request.session['translated_text'] = translated_text
+                request.session['selected_voice'] = voice_selection
+                request.session['audio_file'] = f"/media/audio/{file_name}.wav"
+                
+                messages.success(request, "Audio généré avec succès !")
+                print("Audio généré avec succès")
+            else:
+                messages.error(request, "Erreur lors de la génération de l'audio.")
+                print("Erreur lors de la génération de l'audio")
+                
+        except Exception as e:
+            messages.error(request, f"Erreur lors de la génération : {str(e)}")
+            print(f"Exception: {e}")
+        
+        return redirect('home')
+    
+    def generate_audio_with_voice(self, text, out_path, file_name, voice):
+        print("=== generate_audio_with_voice ===")
+        print(f"Text: {text[:50]}...")
+        print(f"Voice: {voice}")
+        """
+        Version adaptée de generate_audio qui utilise directement la voix sélectionnée
+        """
+        try:
+            import torch
+            from TTS.api import TTS
+            from TTS.tts.configs.xtts_config import XttsConfig
+            
+            # Autoriser la classe personnalisée pour le chargement sécurisé
+            torch.serialization.add_safe_globals([XttsConfig])
+            device = "cuda" if torch.cuda.is_available() else "cpu"
+            print(f"Using device: {device}")
+            
+            tts = TTS("tts_models/multilingual/multi-dataset/xtts_v2")
+            tts.to(device)
+            
+            # Chemin vers le fichier de voix sélectionné
+            voices_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), '../controller', 'voices')
+            print(f"voices_dir : {voices_dir}")
+            voice_path = os.path.join(voices_dir, f"{voice}.wav")
+            print(f"voice_path : {voice_path}")
+            
+            if not os.path.exists(voice_path):
+                print(f"Fichier de voix non trouvé : {voice_path}")
+                raise FileNotFoundError(f"Fichier de voix non trouvé : {voice_path}")
+            
+            output_path = f"{out_path}/{file_name}.wav"
+            print(f"output_path : {output_path}")
+            
+            tts.tts_to_file(
+                text=text,
+                file_path=output_path,
+                speaker_wav=voice_path,
+                language="fr"
+            )
+            
+            print(f"Audio généré avec succès : {output_path}")
+            return output_path
+            
+        except Exception as e:
+            print(f"Erreur lors de la génération audio : {e}")
+            import traceback
+            print(traceback.format_exc())
+            return None
+
+
+# urls.py
+from django.urls import path
+from django.conf import settings
+from django.conf.urls.static import static
+from .views import HomeView, GenerateAudioView
+
+app_name = 'ask_ur_16th_mommy'
+
+urlpatterns = [
+    path('', HomeView.as_view(), name='home'),
+    path('generate-audio/', GenerateAudioView.as_view(), name='generate_audio'),
+]
+
+# Ajouter pour servir les fichiers media en développement
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
