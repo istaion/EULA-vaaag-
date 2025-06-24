@@ -16,10 +16,10 @@ class TranslationResponse(BaseModel):
 @router.post("/translate", response_model=TranslationResponse, summary="Traduire un texte via un model choisi", description="Reçoit un JSON `{ 'text': ... }` et renvoie la traduction.")
 async def translate(request: TranslationRequest):    
     try:
-        model, tokenizer = load_model()
+        model, tokenizer = load_model('model/marianmt-vieux-francais-model2')
         translation = generate_translation_marian(request.text, model, tokenizer)
     except Exception as e:
-        raise HTTPException(status_code=500, detail="erreur interne de traduction")
+        raise HTTPException(status_code=500, detail=f"erreur interne de traduction{e}")
 
     return TranslationResponse(
         input_text=request.text,
@@ -32,7 +32,7 @@ async def translate_mbart(request: TranslationRequest):
         model, tokenizer = load_mbart_model()
         translation = generate_translation_mbart(request.text, model, tokenizer)
     except Exception as e:
-        raise HTTPException(status_code=500, detail="erreur interne de traduction mBART")
+        raise HTTPException(status_code=500, detail=f"erreur interne de traduction mBART : {e}")
 
     return TranslationResponse(
         input_text=request.text,

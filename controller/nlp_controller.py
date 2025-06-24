@@ -1,5 +1,5 @@
 import torch
-from transformers import MarianMTModel, MarianTokenizer MBartForConditionalGeneration, MBart50Tokenizer
+from transformers import MarianMTModel, MarianTokenizer, MBartForConditionalGeneration, MBart50Tokenizer
 from TTS.api import TTS
 from TTS.tts.configs.xtts_config import XttsConfig
 import os
