@@ -223,6 +223,44 @@
             }
         }
         
+        /* Boutons audio */
+        .audio-btn {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            font-family: 'Crimson Text', serif;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .audio-btn:not(.secondary) {
+            background: linear-gradient(135deg, #8b6f47 0%, #6b5b4f 100%);
+            color: white;
+        }
+        
+        .audio-btn.secondary {
+            background: linear-gradient(135deg, #d4c4a0 0%, #c4b490 100%);
+            color: #4a3429;
+            border: 2px solid #8b6f47;
+        }
+        
+        .audio-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(139, 111, 71, 0.3);
+        }
+        
+        .audio-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
         /* Animation subtile */
         .form-container {
             animation: fadeInUp 0.6s ease-out;
@@ -294,8 +332,51 @@
             {% if translated_text %}
             <div style="margin-top: 2rem; padding: 2rem; background: #f9f7f1; border-left: 4px solid #8b6f47; border-radius: 0 8px 8px 0;">
                 <h3 style="color: #4a3429; margin-bottom: 1rem; font-family: 'Playfair Display', serif;">Votre texte transformé :</h3>
-                <div style="font-size: 1.1rem; line-height: 1.8; color: #6b5b4f; font-style: italic;">
+                <div style="font-size: 1.1rem; line-height: 1.8; color: #6b5b4f; font-style: italic; margin-bottom: 2rem;">
                     {{ translated_text|linebreaks }}
+                </div>
+                
+                <!-- Section Audio -->
+                <div style="border-top: 2px solid #d4c4a0; padding-top: 2rem;">
+                    <h4 style="color: #4a3429; margin-bottom: 1.5rem; font-family: 'Playfair Display', serif;">Génération audio :</h4>
+                    
+                    <form method="post" action="{% url 'generate_audio' %}" id="audioForm">
+                        {% csrf_token %}
+                        <input type="hidden" name="translated_text" value="{{ translated_text }}">
+                        
+                        <div class="form-group" style="margin-bottom: 1.5rem;">
+                            <label for="voice_selection" class="form-label">Choisissez une voix :</label>
+                            <select id="voice_selection" name="voice_selection" class="form-select" required>
+                                <option value="">Sélectionnez une voix...</option>
+                                {% for voice in available_voices %}
+                                <option value="{{ voice }}" {% if selected_voice == voice %}selected{% endif %}>{{ voice }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div style="display: flex; gap: 1rem; align-items: center;">
+                            <button type="submit" class="audio-btn" id="generateBtn">
+                                🎭 Générer l'audio
+                            </button>
+                            
+                            {% if audio_file %}
+                            <button type="button" class="audio-btn secondary" onclick="playAudio()" id="playBtn">
+                                🔊 Écouter
+                            </button>
+                            <audio id="audioPlayer" style="display: none;">
+                                <source src="{{ audio_file }}" type="audio/wav">
+                                Votre navigateur ne supporte pas l'audio.
+                            </audio>
+                            {% endif %}
+                        </div>
+                    </form>
+                    
+                    {% if audio_generating %}
+                    <div id="loadingMessage" style="margin-top: 1rem; padding: 1rem; background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 6px; color: #856404;">
+                        <span style="font-weight: 600;">⏳ Génération en cours...</span>
+                        <div style="margin-top: 0.5rem; font-size: 0.9rem;">Cela peut prendre quelques instants selon la longueur du texte.</div>
+                    </div>
+                    {% endif %}
                 </div>
             </div>
             {% endif %}
@@ -306,5 +387,33 @@
     <footer class="footer">
         <p>« Le temps passe, mais les mots demeurent » - EULA VAAAGr</p>
     </footer>
+
+    <script>
+        function playAudio() {
+            const audioPlayer = document.getElementById('audioPlayer');
+            const playBtn = document.getElementById('playBtn');
+            
+            if (audioPlayer.paused) {
+                audioPlayer.play();
+                playBtn.innerHTML = '⏸️ Pause';
+            } else {
+                audioPlayer.pause();
+                playBtn.innerHTML = '🔊 Écouter';
+            }
+        }
+        
+        // Gérer la fin de lecture
+        document.getElementById('audioPlayer')?.addEventListener('ended', function() {
+            const playBtn = document.getElementById('playBtn');
+            playBtn.innerHTML = '🔊 Écouter';
+        });
+        
+        // Gérer le formulaire de génération audio
+        document.getElementById('audioForm')?.addEventListener('submit', function(e) {
+            const generateBtn = document.getElementById('generateBtn');
+            generateBtn.disabled = true;
+            generateBtn.innerHTML = '⏳ Génération...';
+        });
+    </script>
 </body>
 </html>
