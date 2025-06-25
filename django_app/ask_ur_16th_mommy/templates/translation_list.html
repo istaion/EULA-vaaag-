@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EULA VAAAGr - Mes traductions</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Crimson+Text:wght@400;600;700&family=Playfair+Display:wght@400;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Crimson Text', serif;
+            background-color: #f5f1e8;
+            color: #4a3429;
+            line-height: 1.6;
+        }
+        
+        /* Header avec bannière */
+        .header {
+            background: linear-gradient(135deg, #e8dcc0 0%, #d4c4a0 100%);
+            border-bottom: 3px solid #8b6f47;
+            padding: 2rem 0;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            padding: 0 2rem;
+        }
+        
+        .logo-container {
+            flex-shrink: 0;
+        }
+        
+        .horse-icon {
+            width: 80px;
+            height: 80px;
+            background-color: #4a3429;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        
+        .horse-icon::before {
+            content: "🦄";
+            font-size: 2.5rem;
+            filter: sepia(1) hue-rotate(20deg) brightness(0.8);
+        }
+        
+        .title-section {
+            flex-grow: 1;
+        }
+        
+        .main-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: #4a3429;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .subtitle {
+            font-size: 1.3rem;
+            color: #6b5b4f;
+            font-style: italic;
+            font-weight: 400;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .nav-link {
+            padding: 0.8rem 1.5rem;
+            background: linear-gradient(135deg, #8b6f47 0%, #6b5b4f 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .nav-link:hover {
+            background: linear-gradient(135deg, #6b5b4f 0%, #4a3429 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(139, 111, 71, 0.3);
+        }
+        
+        /* Contenu principal */
+        .main-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+        
+        .page-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            color: #4a3429;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+        
+        .page-description {
+            text-align: center;
+            font-size: 1.2rem;
+            color: #6b5b4f;
+            margin-bottom: 3rem;
+            font-style: italic;
+        }
+        
+        /* Table container */
+        .table-container {
+            background: #ffffff;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            border: 2px solid #d4c4a0;
+            overflow-x: auto;
+        }
+        
+        /* Table styles */
+        .translation-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 1.1rem;
+        }
+        
+        .translation-table thead {
+            background: linear-gradient(135deg, #e8dcc0 0%, #d4c4a0 100%);
+        }
+        
+        .translation-table th {
+            padding: 1.2rem 1rem;
+            text-align: left;
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            color: #4a3429;
+            border-bottom: 3px solid #8b6f47;
+        }
+        
+        .translation-table td {
+            padding: 1rem;
+            border-bottom: 1px solid #d4c4a0;
+            vertical-align: top;
+        }
+        
+        .translation-table tbody tr {
+            transition: background-color 0.3s ease;
+        }
+        
+        .translation-table tbody tr:hover {
+            background-color: #f9f7f1;
+        }
+        
+        .translation-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+        
+        /* Text truncation */
+        .text-truncate {
+            max-width: 300px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .text-preview {
+            position: relative;
+            cursor: help;
+        }
+        
+        .text-preview:hover::after {
+            content: attr(data-full-text);
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: #4a3429;
+            color: white;
+            padding: 0.8rem;
+            border-radius: 8px;
+            white-space: normal;
+            max-width: 400px;
+            z-index: 1000;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        
+        /* Model badge */
+        .model-badge {
+            display: inline-block;
+            padding: 0.4rem 0.8rem;
+            background: linear-gradient(135deg, #d4c4a0 0%, #c4b490 100%);
+            color: #4a3429;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        /* Delete button */
+        .delete-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .delete-btn:hover {
+            background-color: #fee;
+            transform: scale(1.1);
+        }
+        
+        .delete-btn svg {
+            width: 24px;
+            height: 24px;
+            stroke: #c73e3e;
+            stroke-width: 2;
+            fill: none;
+        }
+        
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+        }
+        
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+        
+        .empty-state-text {
+            font-size: 1.3rem;
+            color: #6b5b4f;
+            margin-bottom: 2rem;
+            font-style: italic;
+        }
+        
+        .empty-state-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, #8b6f47 0%, #6b5b4f 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .empty-state-link:hover {
+            background: linear-gradient(135deg, #6b5b4f 0%, #4a3429 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(139, 111, 71, 0.3);
+        }
+        
+        /* Footer */
+        .footer {
+            background-color: #4a3429;
+            color: #d4c4a0;
+            text-align: center;
+            padding: 2rem;
+            margin-top: 4rem;
+        }
+        
+        .footer p {
+            font-style: italic;
+            opacity: 0.8;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+                gap: 1rem;
+            }
+            
+            .main-title {
+                font-size: 2.5rem;
+            }
+            
+            .subtitle {
+                font-size: 1.1rem;
+            }
+            
+            .table-container {
+                padding: 1rem;
+            }
+            
+            .translation-table {
+                font-size: 0.9rem;
+            }
+            
+            .translation-table th,
+            .translation-table td {
+                padding: 0.6rem;
+            }
+            
+            .text-truncate {
+                max-width: 150px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    {% include 'header.html' with page_subtitle="Historique de vos correspondances" %}
+
+    <!-- Contenu principal -->
+    <main class="main-container">
+        <h2 class="page-title">Mes traductions</h2>
+        <p class="page-description">Retrouvez ici toutes vos missives transformées en vieux françois</p>
+
+        <div class="table-container">
+            {% if translations %}
+            <table class="translation-table">
+                <thead>
+                    <tr>
+                        <th>Texte original</th>
+                        <th>Traduction en vieux françois</th>
+                        <th>Modèle</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for translation in translations %}
+                    <tr>
+                        <td>
+                            <div class="text-preview text-truncate" data-full-text="{{ translation.text_to_translate }}">
+                                {{ translation.text_to_translate|truncatechars:50 }}
+                            </div>
+                        </td>
+                        <td>
+                            <div class="text-preview text-truncate" data-full-text="{{ translation.translate_text }}">
+                                {{ translation.translate_text|truncatechars:50 }}
+                            </div>
+                        </td>
+                        <td>
+                            <span class="model-badge">{{ translation.model_type }}</span>
+                        </td>
+                        <td>
+                            <form method="post" action="{% url 'delete_translation' translation.pk %}" style="display: inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="delete-btn" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette traduction ?')">
+                                    <svg viewBox="0 0 24 24">
+                                        <path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6h14zM10 11v6M14 11v6"/>
+                                    </svg>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="empty-state">
+                <div class="empty-state-icon">📜</div>
+                <p class="empty-state-text">Aucune traduction n'a encore été réalisée</p>
+                <a href="{% url 'home' %}" class="empty-state-link">
+                    <span>✍️</span>
+                    <span>Commencer une traduction</span>
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>« Le temps passe, mais les mots demeurent » - EULA VAAAGr</p>
+    </footer>
+</body>
+</html>
