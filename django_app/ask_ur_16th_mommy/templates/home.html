@@ -79,6 +79,30 @@
             font-weight: 400;
         }
         
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .nav-link {
+            padding: 0.8rem 1.5rem;
+            background: linear-gradient(135deg, #8b6f47 0%, #6b5b4f 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .nav-link:hover {
+            background: linear-gradient(135deg, #6b5b4f 0%, #4a3429 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(139, 111, 71, 0.3);
+        }
+        
         /* Contenu principal */
         .main-container {
             max-width: 1000px;
@@ -285,9 +309,8 @@
             <div class="logo-container">
                 <div class="horse-icon"></div>
             </div>
-            <div class="title-section">
-                <h1 class="main-title">EULA VAAAGr</h1>
-                <p class="subtitle">Écrivez une lettre à votre arrière arrière arrière grand-mère</p>
+            <div class="nav-links">
+                <a href="{% url 'voice_recording' %}" class="nav-link">🎙️ Enregistrer une voix</a>
             </div>
         </div>
     </header>
@@ -323,6 +346,7 @@
                         <option value="opus" {% if translation_model == 'opus' %}selected{% endif %}>Helsinki-NLP/opus-mt-fr-en</option>
                     </select>
                 </div>
+
 
                 <button type="submit" class="submit-btn">
                     Transformer en vieux françois
