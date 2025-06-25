@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  # Service pour l'API FastAPI
+  fastapi:
+    build:
+      context: .
+      dockerfile: Dockerfile.fastapi
+    container_name: fast_api_app_container
+    ports:
+      - "8000:8000"
+    devices:
+      - "/dev/video0:/dev/video0"
+    # Le nom du service 'fastapi' devient son nom d'hôte sur le réseau Docker
+
+  # Service pour l'application Django
+  django:
+    build:
+      context: .
+      dockerfile: Dockerfile.django
+    container_name: django_app_container
+    ports:
+      - "8001:8001"
+    depends_on:
+      - fastapi # S'assure que l'API démarre avant django
+
+networks:
+  default:
+    name: eula_net
+
+

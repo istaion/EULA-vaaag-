@@ -73,7 +73,7 @@ class HomeView(TemplateView):
         """
         if model == "mBart":
             response = httpx.post(
-                "http://localhost:8000/translate_mbart", 
+                "http://fastapi:8000/translate_mbart", 
                 json={"text": text},
                 timeout=10.0
             )
@@ -82,7 +82,7 @@ class HomeView(TemplateView):
             text = response.json()["translation"]
         elif model == "opus":
             response = httpx.post(
-                "http://localhost:8000/translate", 
+                "http://fastapi:8000/translate", 
                 json={"text": text},
                 timeout=10.0
             )
