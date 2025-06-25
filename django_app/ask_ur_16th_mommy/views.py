@@ -8,15 +8,19 @@ from django.urls import reverse
 from django.contrib import messages
 import httpx
 import sys
-
+import base64
+import subprocess
+import tempfile
 # Ajouter le chemin vers le controller
 sys.path.append(os.path.join(os.path.dirname(os.path.dirname(__file__)), '../controller'))
-from nlp_controller import generate_audio, read_audio
+from nlp_controller import (generate_audio, read_audio,  clear_memory, get_gpu_processes,
+                            reset_gpu_compute_mode, force_cuda_cleanup, restart_nvidia_services,
+                            kill_python_gpu_processes)
 
 class HomeView(TemplateView):
     template_name = 'home.html'
     
-    def get_available_voices(self):
+    def get_available_voices(self): 
         """Récupère la liste des voix disponibles"""
         voices_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), '../controller', 'voices')
         print(f"Recherche des voix dans : {voices_dir}")
@@ -71,6 +75,7 @@ class HomeView(TemplateView):
         """
         Fonction de traduction utilisant votre logique existante
         """
+        # clear_memory()
         if model == "mBart":
             response = httpx.post(
                 "http://localhost:8000/translate_mbart", 
@@ -144,6 +149,7 @@ class GenerateAudioView(TemplateView):
         return redirect('home')
     
     def generate_audio_with_voice(self, text, out_path, file_name, voice):
+        # clear_memory()
         print("=== generate_audio_with_voice ===")
         print(f"Text: {text[:50]}...")
         print(f"Voice: {voice}")
@@ -193,19 +199,139 @@ class GenerateAudioView(TemplateView):
             return None
 
 
-# urls.py
-from django.urls import path
-from django.conf import settings
-from django.conf.urls.static import static
-from .views import HomeView, GenerateAudioView
+class VoiceRecordingView(TemplateView):
+    template_name = 'voice_recording.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return context
 
-app_name = 'ask_ur_16th_mommy'
 
-urlpatterns = [
-    path('', HomeView.as_view(), name='home'),
-    path('generate-audio/', GenerateAudioView.as_view(), name='generate_audio'),
-]
+class SaveRecordingView(TemplateView):
+    """Vue pour sauvegarder un enregistrement direct depuis le navigateur"""
+    
+    def post(self, request, *args, **kwargs):
+        print("=== SaveRecordingView POST ===")
+        
+        try:
+            audio_data = request.POST.get('audio_data', '')
+            voice_name = request.POST.get('voice_name', '').strip()
+            
+            if not audio_data or not voice_name:
+                messages.error(request, "Données audio ou nom de voix manquant.")
+                return redirect('voice_recording')
+            
+            # Nettoyer le nom de fichier
+            safe_voice_name = "".join(c for c in voice_name if c.isalnum() or c in (' ', '-', '_')).rstrip()
+            safe_voice_name = safe_voice_name.replace(' ', '_')
+            
+            # Décoder les données base64
+            audio_bytes = base64.b64decode(audio_data)
+            
+            # Créer un fichier temporaire
+            with tempfile.NamedTemporaryFile(suffix='.webm', delete=False) as temp_file:
+                temp_file.write(audio_bytes)
+                temp_path = temp_file.name
+            
+            print(f"Fichier temporaire créé : {temp_path}")
+            
+            # Traiter l'audio avec ffmpeg
+            voices_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), '../controller', 'voices')
+            os.makedirs(voices_dir, exist_ok=True)
+            
+            result_message = self.extract_sound_sample(temp_path, os.path.join(voices_dir, safe_voice_name))
+            
+            # Supprimer le fichier temporaire
+            os.unlink(temp_path)
+            
+            if "succès" in result_message:
+                messages.success(request, f"Voix '{voice_name}' enregistrée avec succès !")
+            else:
+                messages.error(request, f"Erreur : {result_message}")
+                
+        except Exception as e:
+            print(f"Erreur lors de la sauvegarde : {e}")
+            messages.error(request, f"Erreur lors de la sauvegarde : {str(e)}")
+        
+        return redirect('voice_recording')
+    
+    def extract_sound_sample(self, sound_path, save_name):
+        """
+        Votre fonction d'extraction adaptée
+        """
+        try:
+            result = subprocess.run(
+                ["ffmpeg", "-y", "-i", sound_path, "-ss", "00:00:01", "-t", "8", "-ac", "1", "-ar", "24000", f"{save_name}.wav"],
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL
+            )
+            if result.returncode == 0:
+                return "Échantillon enregistré avec succès !"
+            else:
+                return "Échec lors de l'enregistrement de l'échantillon"
+        except FileNotFoundError:
+            return "Erreur : ffmpeg n'est pas installé"
 
-# Ajouter pour servir les fichiers media en développement
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+class UploadVoiceView(TemplateView):
+    """Vue pour traiter un fichier audio uploadé"""
+    
+    def post(self, request, *args, **kwargs):
+        print("=== UploadVoiceView POST ===")
+        
+        try:
+            audio_file = request.FILES.get('audio_file')
+            voice_name = request.POST.get('voice_name', '').strip()
+            
+            if not audio_file or not voice_name:
+                messages.error(request, "Fichier audio ou nom de voix manquant.")
+                return redirect('voice_recording')
+            
+            # Nettoyer le nom de fichier
+            safe_voice_name = "".join(c for c in voice_name if c.isalnum() or c in (' ', '-', '_')).rstrip()
+            safe_voice_name = safe_voice_name.replace(' ', '_')
+            
+            # Sauvegarder temporairement le fichier uploadé
+            with tempfile.NamedTemporaryFile(delete=False, suffix=f'.{audio_file.name.split(".")[-1]}') as temp_file:
+                for chunk in audio_file.chunks():
+                    temp_file.write(chunk)
+                temp_path = temp_file.name
+            
+            print(f"Fichier uploadé sauvegardé temporairement : {temp_path}")
+            
+            # Traiter l'audio avec ffmpeg
+            voices_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), '../controller', 'voices')
+            os.makedirs(voices_dir, exist_ok=True)
+            
+            result_message = self.extract_sound_sample(temp_path, os.path.join(voices_dir, safe_voice_name))
+            
+            # Supprimer le fichier temporaire
+            os.unlink(temp_path)
+            
+            if "succès" in result_message:
+                messages.success(request, f"Voix '{voice_name}' traitée et sauvegardée avec succès !")
+            else:
+                messages.error(request, f"Erreur : {result_message}")
+                
+        except Exception as e:
+            print(f"Erreur lors du traitement : {e}")
+            messages.error(request, f"Erreur lors du traitement : {str(e)}")
+        
+        return redirect('voice_recording')
+    
+    def extract_sound_sample(self, sound_path, save_name):
+        """
+        Votre fonction d'extraction adaptée
+        """
+        try:
+            result = subprocess.run(
+                ["ffmpeg", "-y", "-i", sound_path, "-ss", "00:00:01", "-t", "8", "-ac", "1", "-ar", "24000", f"{save_name}.wav"],
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL
+            )
+            if result.returncode == 0:
+                return "Échantillon enregistré avec succès !"
+            else:
+                return "Échec lors de l'enregistrement de l'échantillon"
+        except FileNotFoundError:
+            return "Erreur : ffmpeg n'est pas installé"
