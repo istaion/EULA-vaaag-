@@ -6,6 +6,12 @@ RUN apt-get update && \
         build-essential \
         gcc \
         python3-dev \
+        pkg-config \
+        libglib2.0-dev \
+        libcairo2-dev \
+        ffmpeg \
+        libgirepository1.0-dev \
+        gir1.2-gtk-3.0 \
     && rm -rf /var/lib/apt/lists/*
 
 # Installe Poetry
@@ -23,6 +29,7 @@ COPY pyproject.toml poetry.lock ./
 
 # Installe les dépendances du projet en utilisant le lock file.
 RUN poetry install --no-interaction --no-ansi --no-root
+# RUN pip install playsound==1.3.0 pygobject
 RUN pip install playsound==1.3.0
 
 # Patch nécessaire : certaines versions de TTS nécessitent kwargs["weights_only"] pour torch.load
@@ -32,7 +39,6 @@ RUN sed -i '/is_local = os.path.isdir(path) or os.path.isfile(path)/a \    kwarg
 # Copie le code de l'application
 COPY ./django_app /EULA-vaaag-/django_app
 COPY ./django_entrypoint.sh /EULA-vaaag-/django_entrypoint.sh
-COPY ./model /EULA-vaaag-/model
 COPY ./controller/nlp_controller.py /EULA-vaaag-/controller/nlp_controller.py
 
 EXPOSE 8001

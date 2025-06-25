@@ -11,6 +11,8 @@ services:
       - "8000:8000"
     devices:
       - "/dev/video0:/dev/video0"
+    networks:
+      - eula_net
     # Le nom du service 'fastapi' devient son nom d'hôte sur le réseau Docker
 
   # Service pour l'application Django
@@ -23,9 +25,29 @@ services:
       - "8001:8001"
     depends_on:
       - fastapi # S'assure que l'API démarre avant django
+    environment:
+      - GROQ_API_KEY=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
+    networks:
+      - eula_net
+
+  
+  nginx:
+    image: nginx:latest
+    container_name: nginx_reverse_proxy
+    ports:
+      - "443:443"
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./nginx/certs:/etc/nginx/certs:ro
+    depends_on:
+      - django
+    networks:
+      - eula_net
+
 
 networks:
-  default:
-    name: eula_net
+  eula_net:
+    driver: bridge
 
 
