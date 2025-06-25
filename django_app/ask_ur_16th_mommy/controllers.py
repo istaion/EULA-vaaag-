@@ -1,108 +1,65 @@
-import torch
-from transformers import MBartForConditionalGeneration, MBart50TokenizerFast
 import os
-from datetime import datetime
+import requests
+import csv
 import time
+from dotenv import load_dotenv
+from openai import OpenAI
 
-def load_mbart_model(model_path):
-    """Charge le modèle mBART entraîné"""
-    
-    print(f"🌍 === TEST MODÈLE mBART ===")
-    print(f"📁 Modèle: {model_path}")
-    print(f"🕐 {datetime.now().strftime('%H:%M:%S')}\n")
-    
-    # Vérifier que le modèle existe
-    if not os.path.exists(model_path):
-        print(f"❌ Modèle non trouvé: {model_path}")
-        return None, None, None
-    
-    try:
-        print("🔄 Chargement du modèle mBART...")
-        
-        # Charger tokenizer et modèle
-        tokenizer = MBart50TokenizerFast.from_pretrained(model_path)
-        model = MBartForConditionalGeneration.from_pretrained(model_path)
-        
-        # Device
-        device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-        model = model.to(device)
-        
-        print(f"✅ Modèle chargé sur: {device}")
-        
-        if torch.cuda.is_available():
-            allocated = torch.cuda.memory_allocated() / 1024**3
-            print(f"💾 VRAM utilisée: {allocated:.1f}GB")
-        
-        # Vérifier les langues disponibles
-        print(f"\n🔍 Informations mBART:")
-        print(f"  Vocabulaire: {len(tokenizer)}")
-        print(f"  Token français: fr_XX = {tokenizer.lang_code_to_id.get('fr_XX', 'Non trouvé')}")
-        
-        return model, tokenizer, device
-        
-    except Exception as e:
-        print(f"❌ Erreur lors du chargement: {e}")
-        return None, None, None
+load_dotenv()
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 
-def translate_with_mbart(model_path, text, max_length=1024):
-    """Traduit avec mBART en utilisant différentes stratégies"""
-    
-    model, tokenizer, device = load_mbart_model(model_path)
+def generate_prompt_old_french_translation(modern_text):
+    return (
+        f"Traduis uniquement ce texte en ancien français, sans ajout ni explication."
+        f"Le résultat doit être amusant."
+        f"Ne réponds qu'avec le texte traduit, sans introduction.\n\nTexte à traduire :\n\"{modern_text}\"\n\nTraduction :"
+    )
 
-    # Configuration langue
-    tokenizer.src_lang = "fr_XX"
+def call_groq_chat(prompt, model="gemma2-9b-it", temperature=0.8, max_tokens=400, max_retries=3):
+    url = "https://api.groq.com/openai/v1/chat/completions"
+    prompt = generate_prompt_old_french_translation(prompt)
+    headers = {
+        "Authorization": f"Bearer {GROQ_API_KEY}",
+        "Content-Type": "application/json"
+    }
+    data = {
+        "model": model,
+        "messages": [{"role": "user", "content": prompt}],
+        "temperature": temperature,
+        "max_tokens": max_tokens
+    }
     
-    strategie = {
-            "num_beams": 2,
-            "do_sample": True,
-            "temperature": 1.0,
-            "top_p": 0.95,
-            "repetition_penalty": 1.1
-        }
-    
-    results = {}
-    
-    try:
-        # Tokeniser l'entrée
-        inputs = tokenizer(
-            text,
-            return_tensors="pt",
-            max_length=max_length,
-            truncation=True,
-            padding=True
-        )
-        inputs = {k: v.to(device) for k, v in inputs.items()}
-    
+    for attempt in range(max_retries):
         try:
-            start_time = time.time()
+            response = requests.post(url, headers=headers, json=data)
+            if not response.ok:
+                print(f"[❌ Erreur API Groq - Tentative {attempt + 1}/{max_retries}]")
+                print("Status code :", response.status_code)
+                print("Message :", response.text)
+                
+                # Si c'est une erreur 503 et qu'il reste des tentatives
+                if response.status_code == 503 and attempt < max_retries - 1:
+                    print("⏳ Attente de 1 seconde avant nouvelle tentative...")
+                    time.sleep(1)
+                    continue
+                
+                response.raise_for_status()
             
-            with torch.no_grad():
-                outputs = model.generate(
-                    **inputs,
-                    forced_bos_token_id=tokenizer.lang_code_to_id["fr_XX"],
-                    max_length=max_length,
-                    pad_token_id=tokenizer.pad_token_id,
-                    **strategie
-                )
+            return response.json()["choices"][0]["message"]["content"].strip()
             
-            end_time = time.time()
-            
-            # Décoder
-            result = tokenizer.decode(outputs[0], skip_special_tokens=True)
-            
-            results = {
-                'text': result,
-                'time': end_time - start_time
-            }
-            
+        except requests.exceptions.HTTPError as e:
+            if attempt < max_retries - 1:
+                print(f"⏳ Erreur HTTP, nouvelle tentative dans 1 seconde...")
+                time.sleep(1)
+                continue
+            else:
+                print(f"❌ Échec après {max_retries} tentatives")
+                raise e
         except Exception as e:
-            results = {
-                'text': f"❌ Erreur: {e}",
-                'time': 0
-            }
-    
-    except Exception as e:
-        print(f"❌ Erreur générale: {e}")
-        return {}
-    
-    return results
+            if attempt < max_retries - 1:
+                print(f"⏳ Erreur inattendue, nouvelle tentative dans 1 seconde...")
+                time.sleep(1)
+                continue
+            else:
+                print(f"❌ Échec après {max_retries} tentatives")
+                raise e

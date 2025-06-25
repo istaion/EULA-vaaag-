@@ -1,8 +1,9 @@
 import os
 from django.shortcuts import render, redirect
 from django.views.generic import TemplateView
+from ask_ur_16th_mommy.models import Translation
 from ask_ur_16th_mommy.forms import TranslationForm
-from ask_ur_16th_mommy.controllers import load_mbart_model, translate_with_mbart
+from ask_ur_16th_mommy.controllers import call_groq_chat
 from django.http import JsonResponse, HttpResponse
 from django.urls import reverse
 from django.contrib import messages
@@ -75,8 +76,10 @@ class HomeView(TemplateView):
         """
         Fonction de traduction utilisant votre logique existante
         """
+        new_translation = Translation(text_to_translate=text)
         # clear_memory()
         if model == "mBart":
+            new_translation.model_type = "mBart"
             response = httpx.post(
                 "http://localhost:8000/translate_mbart", 
                 json={"text": text},
@@ -86,6 +89,7 @@ class HomeView(TemplateView):
                 raise RuntimeError(f"Erreur de traduction OPUS: {response.text}")
             text = response.json()["translation"]
         elif model == "opus":
+            new_translation.model_type = "opus"
             response = httpx.post(
                 "http://localhost:8000/translate", 
                 json={"text": text},
@@ -94,6 +98,11 @@ class HomeView(TemplateView):
             if response.status_code != 200:
                 raise RuntimeError(f"Erreur de traduction OPUS: {response.text}")
             text = response.json()["translation"]
+        else :
+            new_translation.model_type = "API"
+            text = call_groq_chat(text)
+        new_translation.translate_text = text
+        new_translation.save()
         return text
 
 
