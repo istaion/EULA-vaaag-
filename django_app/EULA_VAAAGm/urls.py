@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from ask_ur_16th_mommy.views import HomeView, GenerateAudioView
+from ask_ur_16th_mommy.views import HomeView, GenerateAudioView, VoiceRecordingView, SaveRecordingView, UploadVoiceView
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -25,6 +25,9 @@ app_name = 'eula_vaaagr'
 urlpatterns = [
     path('', HomeView.as_view(), name='home'),
     path('generate-audio/', GenerateAudioView.as_view(), name='generate_audio'),
+    path('voice-recording/', VoiceRecordingView.as_view(), name='voice_recording'),
+    path('save-recording/', SaveRecordingView.as_view(), name='save_recording'),
+    path('upload-voice/', UploadVoiceView.as_view(), name='upload_voice'),
     path('admin/', admin.site.urls),
 ]
 

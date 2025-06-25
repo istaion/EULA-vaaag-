@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enregistrement vocal - EULA VAAAGr</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Crimson+Text:wght@400;600;700&family=Playfair+Display:wght@400;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Crimson Text', serif;
+            background-color: #f5f1e8;
+            color: #4a3429;
+            line-height: 1.6;
+        }
+        
+        /* Header avec bannière */
+        .header {
+            background: linear-gradient(135deg, #e8dcc0 0%, #d4c4a0 100%);
+            border-bottom: 3px solid #8b6f47;
+            padding: 2rem 0;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            padding: 0 2rem;
+        }
+        
+        .logo-container {
+            flex-shrink: 0;
+        }
+        
+        .horse-icon {
+            width: 80px;
+            height: 80px;
+            background-color: #4a3429;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        
+        .horse-icon::before {
+            content: "🎙️";
+            font-size: 2.5rem;
+        }
+        
+        .title-section {
+            flex-grow: 1;
+        }
+        
+        .main-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: #4a3429;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .subtitle {
+            font-size: 1.3rem;
+            color: #6b5b4f;
+            font-style: italic;
+            font-weight: 400;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .nav-link {
+            padding: 0.5rem 1rem;
+            background: #8b6f47;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link:hover {
+            background: #6b5b4f;
+            transform: translateY(-1px);
+        }
+        
+        /* Contenu principal */
+        .main-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+        
+        .intro-text {
+            text-align: center;
+            font-size: 1.2rem;
+            color: #6b5b4f;
+            margin-bottom: 3rem;
+            font-style: italic;
+        }
+        
+        .recording-container {
+            background: #ffffff;
+            border-radius: 15px;
+            padding: 3rem;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            border: 2px solid #d4c4a0;
+            text-align: center;
+        }
+        
+        .recording-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            color: #4a3429;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+        
+        .recording-title::after {
+            content: '';
+            display: block;
+            width: 80px;
+            height: 3px;
+            background: #8b6f47;
+            margin: 1rem auto;
+        }
+        
+        .reading-text {
+            background: #f9f7f1;
+            border-left: 4px solid #8b6f47;
+            padding: 2rem;
+            margin: 2rem 0;
+            border-radius: 0 8px 8px 0;
+            font-size: 1.2rem;
+            line-height: 1.8;
+            color: #4a3429;
+            font-style: italic;
+            text-align: left;
+        }
+        
+        .recording-controls {
+            margin: 2rem 0;
+        }
+        
+        .record-btn {
+            padding: 1.2rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-family: 'Playfair Display', serif;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 0.5rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            min-width: 200px;
+            justify-content: center;
+        }
+        
+        .record-btn.start {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+            color: white;
+        }
+        
+        .record-btn.stop {
+            background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+            color: white;
+        }
+        
+        .record-btn.upload {
+            background: linear-gradient(135deg, #8b6f47 0%, #6b5b4f 100%);
+            color: white;
+        }
+        
+        .record-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+        }
+        
+        .record-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .timer {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #dc3545;
+            margin: 1rem 0;
+            font-family: 'Crimson Text', serif;
+        }
+        
+        .status-message {
+            margin: 1rem 0;
+            padding: 1rem;
+            border-radius: 6px;
+            font-weight: 600;
+        }
+        
+        .status-success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        
+        .status-error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        
+        .status-info {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+        }
+        
+        .file-input-container {
+            margin: 2rem 0;
+            padding: 2rem;
+            border: 2px dashed #d4c4a0;
+            border-radius: 8px;
+            background: #fefdfb;
+        }
+        
+        .file-input {
+            margin: 1rem 0;
+        }
+        
+        .audio-preview {
+            margin: 1rem 0;
+            padding: 1rem;
+            background: #f9f7f1;
+            border-radius: 6px;
+        }
+        
+        /* Footer */
+        .footer {
+            background-color: #4a3429;
+            color: #d4c4a0;
+            text-align: center;
+            padding: 2rem;
+            margin-top: 4rem;
+        }
+        
+        .footer p {
+            font-style: italic;
+            opacity: 0.8;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+                gap: 1rem;
+            }
+            
+            .main-title {
+                font-size: 2.5rem;
+            }
+            
+            .subtitle {
+                font-size: 1.1rem;
+            }
+            
+            .main-container {
+                padding: 2rem 1rem;
+            }
+            
+            .recording-container {
+                padding: 2rem;
+            }
+            
+            .record-btn {
+                min-width: 150px;
+                font-size: 1rem;
+            }
+        }
+        
+        /* Animation */
+        .recording-container {
+            animation: fadeInUp 0.6s ease-out;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .recording-indicator {
+            display: none;
+            width: 20px;
+            height: 20px;
+            background: #dc3545;
+            border-radius: 50%;
+            animation: pulse 1s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.3; }
+            100% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header avec bannière -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo-container">
+                <div class="horse-icon"></div>
+            </div>
+            <div class="title-section">
+                <h1 class="main-title">EULA VAAAGr</h1>
+                <p class="subtitle">Enregistrement de votre voix</p>
+            </div>
+            <div class="nav-links">
+                <a href="{% url 'home' %}" class="nav-link">← Retour à la traduction</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Contenu principal -->
+    <main class="main-container">
+        <p class="intro-text">
+            Enregistrez votre voix pour personnaliser la synthèse vocale de vos textes traduits
+        </p>
+
+        <div class="recording-container">
+            <h2 class="recording-title">Créer votre échantillon vocal</h2>
+            
+            <!-- Texte à lire -->
+            <div class="reading-text">
+                <strong>Lisez ce texte à voix haute :</strong><br><br>
+                « Bonjour, j'enregistre ma voix pour servir l'intelligence artificielle. 
+                Cette technologie me permettra de donner vie à mes textes en vieux français 
+                avec ma propre voix. Je parle clairement et distinctement pour obtenir 
+                un échantillon de qualité optimale. »
+            </div>
+
+            <!-- Méthode 1: Enregistrement direct -->
+            <div id="directRecording">
+                <h3 style="color: #4a3429; margin: 2rem 0 1rem 0;">Méthode 1 : Enregistrement direct</h3>
+                
+                <div class="recording-controls">
+                    <button id="startRecord" class="record-btn start">
+                        🎙️ Commencer l'enregistrement
+                    </button>
+                    <button id="stopRecord" class="record-btn stop" disabled>
+                        ⏹️ Arrêter l'enregistrement
+                    </button>
+                    <div class="recording-indicator" id="recordingIndicator"></div>
+                </div>
+
+                <div id="timer" class="timer" style="display: none;">00:00</div>
+                
+                <div id="audioPreview" class="audio-preview" style="display: none;">
+                    <h4>Aperçu de votre enregistrement :</h4>
+                    <audio id="recordedAudio" controls style="width: 100%; margin: 1rem 0;"></audio>
+                    
+                    <form method="post" action="{% url 'save_recording' %}" id="recordingForm">
+                        {% csrf_token %}
+                        <input type="hidden" id="audioData" name="audio_data">
+                        <input type="text" name="voice_name" placeholder="Nom pour votre voix (ex: ma_voix)" 
+                               style="padding: 0.8rem; border: 2px solid #d4c4a0; border-radius: 6px; margin: 1rem; width: 200px;" required>
+                        <button type="submit" class="record-btn upload">
+                            💾 Sauvegarder la voix
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Séparateur -->
+            <div style="margin: 3rem 0; border-top: 2px solid #d4c4a0; text-align: center;">
+                <span style="background: white; padding: 0 1rem; color: #6b5b4f; font-style: italic;">ou</span>
+            </div>
+
+            <!-- Méthode 2: Upload de fichier -->
+            <div id="fileUpload">
+                <h3 style="color: #4a3429; margin: 2rem 0 1rem 0;">Méthode 2 : Téléverser un fichier audio</h3>
+                
+                <form method="post" enctype="multipart/form-data" action="{% url 'upload_voice' %}">
+                    {% csrf_token %}
+                    <div class="file-input-container">
+                        <label for="audioFile" style="display: block; margin-bottom: 1rem; font-weight: 600;">
+                            Sélectionnez votre fichier audio :
+                        </label>
+                        <input type="file" id="audioFile" name="audio_file" accept="audio/*" 
+                               style="margin: 1rem 0; padding: 0.5rem;" required>
+                        <input type="text" name="voice_name" placeholder="Nom pour votre voix" 
+                               style="padding: 0.8rem; border: 2px solid #d4c4a0; border-radius: 6px; margin: 1rem; width: 200px;" required>
+                        <br>
+                        <button type="submit" class="record-btn upload">
+                            📤 Téléverser et traiter
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Messages de statut -->
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="status-message status-{{ message.tags }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>« Votre voix, votre héritage » - EULA VAAAGr</p>
+    </footer>
+
+    <script>
+        let mediaRecorder;
+        let audioChunks = [];
+        let isRecording = false;
+        let recordingTimer;
+        let startTime;
+
+        const startBtn = document.getElementById('startRecord');
+        const stopBtn = document.getElementById('stopRecord');
+        const timer = document.getElementById('timer');
+        const indicator = document.getElementById('recordingIndicator');
+        const audioPreview = document.getElementById('audioPreview');
+        const recordedAudio = document.getElementById('recordedAudio');
+        const audioDataInput = document.getElementById('audioData');
+
+        // Demander l'autorisation du microphone
+        async function requestMicrophoneAccess() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                return stream;
+            } catch (error) {
+                alert('Erreur : Impossible d\'accéder au microphone. Veuillez autoriser l\'accès.');
+                return null;
+            }
+        }
+
+        // Démarrer l'enregistrement
+        startBtn.addEventListener('click', async () => {
+            const stream = await requestMicrophoneAccess();
+            if (!stream) return;
+
+            audioChunks = [];
+            mediaRecorder = new MediaRecorder(stream);
+            
+            mediaRecorder.ondataavailable = (event) => {
+                audioChunks.push(event.data);
+            };
+
+            mediaRecorder.onstop = () => {
+                const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                const audioUrl = URL.createObjectURL(audioBlob);
+                recordedAudio.src = audioUrl;
+                
+                // Convertir en base64 pour l'envoi
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                    audioDataInput.value = reader.result.split(',')[1]; // Enlever le préfixe data:
+                };
+                reader.readAsDataURL(audioBlob);
+                
+                audioPreview.style.display = 'block';
+                
+                // Arrêter le stream
+                stream.getTracks().forEach(track => track.stop());
+            };
+
+            mediaRecorder.start();
+            isRecording = true;
+            
+            startBtn.disabled = true;
+            stopBtn.disabled = false;
+            timer.style.display = 'block';
+            indicator.style.display = 'inline-block';
+            
+            startTime = Date.now();
+            recordingTimer = setInterval(updateTimer, 1000);
+        });
+
+        // Arrêter l'enregistrement
+        stopBtn.addEventListener('click', () => {
+            if (mediaRecorder && isRecording) {
+                mediaRecorder.stop();
+                isRecording = false;
+                
+                startBtn.disabled = false;
+                stopBtn.disabled = true;
+                indicator.style.display = 'none';
+                
+                clearInterval(recordingTimer);
+            }
+        });
+
+        // Mettre à jour le timer
+        function updateTimer() {
+            const elapsed = Math.floor((Date.now() - startTime) / 1000);
+            const minutes = Math.floor(elapsed / 60);
+            const seconds = elapsed % 60;
+            timer.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            // Arrêter automatiquement après 30 secondes
+            if (elapsed >= 30) {
+                stopBtn.click();
+            }
+        }
+
+        // Prévisualisation du fichier uploadé
+        document.getElementById('audioFile').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const audioUrl = URL.createObjectURL(file);
+                const preview = document.createElement('audio');
+                preview.src = audioUrl;
+                preview.controls = true;
+                preview.style.width = '100%';
+                preview.style.margin = '1rem 0';
+                
+                // Supprimer l'ancien aperçu s'il existe
+                const existingPreview = document.querySelector('#fileUpload audio');
+                if (existingPreview) {
+                    existingPreview.remove();
+                }
+                
+                // Ajouter le nouveau
+                e.target.parentNode.appendChild(preview);
+            }
+        });
+    </script>
+</body>
+</html>
