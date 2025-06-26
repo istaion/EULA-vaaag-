@@ -38,45 +38,106 @@ def load_mbart_model(model_path="model/mbart/mbart_model_0928"):
 
 
 # fonction de traduction mBART
-def generate_translation_mbart(text, model, tokenizer, device=None):
+# def generate_translation_mbart(text, model, tokenizer, device=None):
     
+#     if device is None:
+#         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+#     model = model.to(device)
+#     model.eval()
+    
+#     # Tokenisation avec mBART
+#     inputs = tokenizer(
+#         text,
+#         return_tensors="pt",
+#         max_length=1024,
+#         truncation=True,
+#         padding=True
+#     )
+#     inputs = {k: v.to(device) for k, v in inputs.items()}
+    
+#     with torch.no_grad():
+#         generated_tokens = model.generate(
+#             **inputs,
+#             max_length=400,
+#             num_beams=4,
+#             forced_bos_token_id=tokenizer.lang_code_to_id["fr_XX"]
+#         )
+    
+#     return tokenizer.decode(generated_tokens[0], skip_special_tokens=True)
+
+def generate_translation_mbart(text, model, tokenizer, device=None):
     if device is None:
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    
     model = model.to(device)
     model.eval()
-    
-    # Tokenisation avec mBART
-    inputs = tokenizer(
-        text,
-        return_tensors="pt",
-        max_length=1024,
-        truncation=True,
-        padding=True
-    )
-    inputs = {k: v.to(device) for k, v in inputs.items()}
-    
-    with torch.no_grad():
-        generated_tokens = model.generate(
-            **inputs,
-            max_length=400,
-            num_beams=4,
-            forced_bos_token_id=tokenizer.lang_code_to_id["fr_XX"]
+
+    try:
+        # Tokenisation avec mBART
+        inputs = tokenizer(
+            text,
+            return_tensors="pt",
+            max_length=1024,
+            truncation=True,
+            padding=True
         )
+        inputs = {k: v.to(device) for k, v in inputs.items()}
+
+        with torch.no_grad():
+            generated_tokens = model.generate(
+                **inputs,
+                max_length=400,
+                num_beams=4,
+                forced_bos_token_id=tokenizer.lang_code_to_id["fr_XX"]
+            )
+
+        output = tokenizer.decode(generated_tokens[0], skip_special_tokens=True)
     
-    return tokenizer.decode(generated_tokens[0], skip_special_tokens=True)
+    finally:
+        # Libération explicite des ressources GPU
+        del model
+        del tokenizer
+        del inputs
+        torch.cuda.empty_cache()
+    
+    return output
+
 
 # fonction de traduction
-def generate_translation_marian(text, model, tokenizer, device=None):
+# def generate_translation_marian(text, model, tokenizer, device=None):
 
+#     if device is None:
+#         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+#     model = model.to(device)
+#     model.eval()
+#     batch = tokenizer.prepare_seq2seq_batch([text], return_tensors="pt", max_length=128, truncation=True)
+#     batch = {k: v.to(device) for k, v in batch.items()}
+#     with torch.no_grad():
+#         gen = model.generate(**batch, max_length=400, num_beams=4)
+#     return tokenizer.decode(gen[0], skip_special_tokens=True)
+
+def generate_translation_marian(text, model, tokenizer, device=None):
     if device is None:
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model = model.to(device)
     model.eval()
-    batch = tokenizer.prepare_seq2seq_batch([text], return_tensors="pt", max_length=128, truncation=True)
+
+    batch = tokenizer.prepare_seq2seq_batch(
+        [text], return_tensors="pt", max_length=128, truncation=True
+    )
     batch = {k: v.to(device) for k, v in batch.items()}
+
     with torch.no_grad():
         gen = model.generate(**batch, max_length=400, num_beams=4)
-    return tokenizer.decode(gen[0], skip_special_tokens=True)
+
+    output = tokenizer.decode(gen[0], skip_special_tokens=True)
+
+    # Nettoyage GPU
+    del model
+    del tokenizer
+    torch.cuda.empty_cache()
+
+    return output
 
 
 # générer l'audio
@@ -292,12 +353,12 @@ def clear_memory():
     show_memory_status()
     print()
     
-    # Nettoyage des processus Python
-    killed = kill_python_gpu_processes()
+    # # Nettoyage des processus Python
+    # killed = kill_python_gpu_processes()
     
-    if killed > 0:
-        print("\n⏳ Attente stabilisation...")
-        time.sleep(3)
+    # if killed > 0:
+    #     print("\n⏳ Attente stabilisation...")
+    #     time.sleep(3)
     
     # Nettoyage CUDA
     force_cuda_cleanup()

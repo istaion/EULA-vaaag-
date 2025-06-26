@@ -39,7 +39,11 @@ RUN sed -i '/is_local = os.path.isdir(path) or os.path.isfile(path)/a \    kwarg
 # Copie le code de l'application
 COPY ./django_app /EULA-vaaag-/django_app
 COPY ./django_entrypoint.sh /EULA-vaaag-/django_entrypoint.sh
-COPY ./controller/nlp_controller.py /EULA-vaaag-/controller/nlp_controller.py
+COPY ./controller /EULA-vaaag-/controller
+COPY ./django_app/ask_ur_16th_mommy/model /EULA-vaaag-/django_app/ask_ur_16th_mommy/model
+
+RUN mkdir -p /root/.local/share/tts/tts_models--multilingual--multi-dataset--xtts_v2/
+COPY ./django_app/ask_ur_16th_mommy/model/xtts_v2/ /root/.local/share/tts/tts_models--multilingual--multi-dataset--xtts_v2/
 
 EXPOSE 8001
 

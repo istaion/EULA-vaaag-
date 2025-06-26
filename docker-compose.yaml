@@ -1,7 +1,6 @@
 version: '3.8'
 
 services:
-  # Service pour l'API FastAPI
   fastapi:
     build:
       context: .
@@ -9,13 +8,18 @@ services:
     container_name: fast_api_app_container
     ports:
       - "8000:8000"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: [gpu]
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
     devices:
-      - "/dev/video0:/dev/video0"
+      - "/dev/video0:/dev/video0"  # Webcam access (facultatif si nécessaire)
     networks:
       - eula_net
-    # Le nom du service 'fastapi' devient son nom d'hôte sur le réseau Docker
 
-  # Service pour l'application Django
   django:
     build:
       context: .
@@ -24,13 +28,18 @@ services:
     ports:
       - "8001:8001"
     depends_on:
-      - fastapi # S'assure que l'API démarre avant django
+      - fastapi
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: [gpu]
     environment:
       - GROQ_API_KEY=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
+      - NVIDIA_VISIBLE_DEVICES=all
     networks:
       - eula_net
 
-  
   nginx:
     image: nginx:latest
     container_name: nginx_reverse_proxy
@@ -45,9 +54,6 @@ services:
     networks:
       - eula_net
 
-
 networks:
   eula_net:
     driver: bridge
-
-

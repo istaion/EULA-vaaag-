@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 from django.shortcuts import render, redirect
 from django.views.generic import TemplateView
 from ask_ur_16th_mommy.models import Translation
@@ -7,6 +8,7 @@ from ask_ur_16th_mommy.controllers import call_groq_chat
 from django.http import JsonResponse, HttpResponse
 from django.urls import reverse
 from django.contrib import messages
+from django.conf import settings
 import httpx
 import sys
 import base64
@@ -77,7 +79,7 @@ class HomeView(TemplateView):
         Fonction de traduction utilisant votre logique existante
         """
         new_translation = Translation(text_to_translate=text)
-        # clear_memory()
+        clear_memory()
         if model == "mBart":
             new_translation.model_type = "mBart"
             response = httpx.post(
@@ -103,7 +105,9 @@ class HomeView(TemplateView):
             text = call_groq_chat(text)
         new_translation.translate_text = text
         new_translation.save()
+        clear_memory()
         return text
+    
 
 
 class GenerateAudioView(TemplateView):
@@ -158,7 +162,7 @@ class GenerateAudioView(TemplateView):
         return redirect('home')
     
     def generate_audio_with_voice(self, text, out_path, file_name, voice):
-        # clear_memory()
+        clear_memory()
         print("=== generate_audio_with_voice ===")
         print(f"Text: {text[:50]}...")
         print(f"Voice: {voice}")
@@ -175,7 +179,8 @@ class GenerateAudioView(TemplateView):
             device = "cuda" if torch.cuda.is_available() else "cpu"
             print(f"Using device: {device}")
             
-            tts = TTS("tts_models/multilingual/multi-dataset/xtts_v2")
+            os.environ["COQUI_TOS_AGREED"] = "1"
+            tts = TTS("tts_models/multilingual/multi-dataset/xtts_v2")            # telechargement depuis huggingface
             tts.to(device)
             
             # Chemin vers le fichier de voix sélectionné
@@ -199,12 +204,16 @@ class GenerateAudioView(TemplateView):
             )
             
             print(f"Audio généré avec succès : {output_path}")
+            # Nettoyage GPU
+            clear_memory()
             return output_path
             
         except Exception as e:
             print(f"Erreur lors de la génération audio : {e}")
             import traceback
             print(traceback.format_exc())
+            # Nettoyage GPU
+            clear_memory()
             return None
 
 

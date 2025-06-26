@@ -212,3 +212,4 @@ controller/voices/*.mp3
 notes.txt
 scripts/mbart_fast*
 notebooks/Vic/first_model.ipynb
+django_app/ask_ur_16th_mommy/model
