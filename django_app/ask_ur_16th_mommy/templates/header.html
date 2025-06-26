@@ -1,0 +1,17 @@
+<!-- header.html -->
+<header class="header">
+    <div class="header-content">
+        <div class="logo-container">
+            <div class="horse-icon"></div>
+        </div>
+        <div class="title-section">
+            <h1 class="main-title">EULA VAAAGr</h1>
+            <p class="subtitle">{{ page_subtitle|default:"Écrivez une lettre à votre arrière arrière arrière grand-mère" }}</p>
+        </div>
+        <div class="nav-links">
+            <a href="{% url 'home' %}" class="nav-link">🏠 Accueil</a>
+            <a href="{% url 'voice_recording' %}" class="nav-link">🎙️ Enregistrer une voix</a>
+            <a href="{% url 'translation_list' %}" class="nav-link">📜 Mes traductions</a>
+        </div>
+    </div>
+</header>

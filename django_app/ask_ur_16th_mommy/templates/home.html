@@ -304,16 +304,7 @@
 </head>
 <body>
     <!-- Header avec bannière -->
-    <header class="header">
-        <div class="header-content">
-            <div class="logo-container">
-                <div class="horse-icon"></div>
-            </div>
-            <div class="nav-links">
-                <a href="{% url 'voice_recording' %}" class="nav-link">🎙️ Enregistrer une voix</a>
-            </div>
-        </div>
-    </header>
+     {% include 'header.html' with page_subtitle="Historique de vos correspondances" %}
 
     <!-- Contenu principal -->
     <main class="main-container">

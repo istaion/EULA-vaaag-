@@ -1,4 +1,5 @@
 from django import forms
+from ask_ur_16th_mommy.models import Translation
 
 class TranslationForm(forms.Form):
     TRANSLATION_CHOICES = [
@@ -24,3 +25,22 @@ class TranslationForm(forms.Form):
         label='Modèle de traduction :',
         required=True
     )
+
+class TranslationModelForm(forms.ModelForm):
+    class Meta:
+        model = Translation
+        fields = ['text_to_translate', 'model_type']
+        labels = {
+            'text_to_translate': 'Votre texte à traduire :',
+            'model_type': 'Modèle de traduction :'
+        }
+        widgets = {
+            'text_to_translate': forms.Textarea(attrs={
+                'class': 'form-textarea',
+                'placeholder': 'Écrivez ici le texte que vous souhaitez transformer en vieux français...',
+                'rows': 8
+            }),
+            'model_type': forms.Select(attrs={
+                'class': 'form-select'
+            })
+        }
