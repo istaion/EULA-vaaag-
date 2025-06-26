@@ -1,12 +1,11 @@
 import os
 from pathlib import Path
-from django.shortcuts import render, redirect
-from django.views.generic import TemplateView
-from ask_ur_16th_mommy.models import Translation
-from ask_ur_16th_mommy.forms import TranslationForm
+from django.shortcuts import render, redirect, get_object_or_404
+from django.views.generic import TemplateView, ListView, DeleteView
+from ask_ur_16th_mommy.forms import TranslationForm, TranslationModelForm
 from ask_ur_16th_mommy.controllers import call_groq_chat
 from django.http import JsonResponse, HttpResponse
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.contrib import messages
 from django.conf import settings
 import httpx
@@ -353,3 +352,25 @@ class UploadVoiceView(TemplateView):
                 return "Échec lors de l'enregistrement de l'échantillon"
         except FileNotFoundError:
             return "Erreur : ffmpeg n'est pas installé"
+
+
+class TranslationListView(ListView):
+    """Vue pour afficher la liste des traductions"""
+    model = Translation
+    template_name = 'translation_list.html'
+    context_object_name = 'translations'
+    ordering = ['-id']  # Ordre décroissant par ID (plus récent en premier)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['page_subtitle'] = "Historique de vos correspondances"
+        return context
+
+class TranslationDeleteView(DeleteView):
+    """Vue pour supprimer une traduction"""
+    model = Translation
+    success_url = reverse_lazy('translation_list')
+    
+    def delete(self, request, *args, **kwargs):
+        messages.success(request, "La traduction a été supprimée avec succès.")
+        return super().delete(request, *args, **kwargs)
