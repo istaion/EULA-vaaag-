@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import TemplateView, ListView, DeleteView
 from ask_ur_16th_mommy.models import Translation
 from ask_ur_16th_mommy.forms import TranslationForm, TranslationModelForm
-from ask_ur_16th_mommy.controllers import call_groq_chat
+from ask_ur_16th_mommy.controller.controllers import call_groq_chat
 from django.http import JsonResponse, HttpResponse
 from django.urls import reverse, reverse_lazy
 from django.contrib import messages
@@ -12,18 +12,13 @@ import sys
 import base64
 import subprocess
 import tempfile
-# Ajouter le chemin vers le controller
-sys.path.append(os.path.join(os.path.dirname(os.path.dirname(__file__)), '../controller'))
-from nlp_controller import (generate_audio, read_audio,  clear_memory, get_gpu_processes,
-                            reset_gpu_compute_mode, force_cuda_cleanup, restart_nvidia_services,
-                            kill_python_gpu_processes)
 
 class HomeView(TemplateView):
     template_name = 'home.html'
     
     def get_available_voices(self): 
         """Récupère la liste des voix disponibles"""
-        voices_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), '../controller', 'voices')
+        voices_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'ask_ur_16th_mommy', 'controller', 'voices')
         print(f"Recherche des voix dans : {voices_dir}")
         if os.path.exists(voices_dir):
             voices = [f[:-4] for f in os.listdir(voices_dir) if f.lower().endswith(".wav")]
@@ -108,104 +103,67 @@ class HomeView(TemplateView):
 
 class GenerateAudioView(TemplateView):
     template_name = 'home.html'
-    
+
     def post(self, request, *args, **kwargs):
         print("=== POST GenerateAudioView ===")
         translated_text = request.POST.get('translated_text', '')
         voice_selection = request.POST.get('voice_selection', '')
-        
+
         print(f"Translated text: {translated_text[:50]}...")
         print(f"Voice selection: {voice_selection}")
-        
+
         if not translated_text or not voice_selection:
             messages.error(request, "Texte ou voix manquant.")
             return redirect('home')
-        
+
         try:
-            # Créer le dossier pour les fichiers audio s'il n'existe pas
+            import time
             audio_dir = os.path.join('media', 'audio')
             os.makedirs(audio_dir, exist_ok=True)
-            print(f"Dossier audio créé/vérifié : {audio_dir}")
-            
-            # Nom du fichier unique basé sur le timestamp
-            import time
             file_name = f"audio_{int(time.time())}"
-            
-            # Générer l'audio avec la fonction adaptée
-            audio_path = self.generate_audio_with_voice(
-                translated_text, 
-                audio_dir, 
-                file_name, 
-                voice_selection
+            output_path = os.path.join(audio_dir, f"{file_name}.wav")
+
+            # Chemin absolu du script worker
+            worker_script = os.path.join(
+                os.path.dirname(os.path.abspath(__file__)),
+                'controller', 'worker_audio_generation.py'
             )
-            
-            if audio_path:
-                # Stocker les informations dans la session pour les récupérer
+            # Chemin absolu de la voix (adapte selon ton arbo)
+            voices_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'ask_ur_16th_mommy', 'controller', 'voices')
+            voice_path = os.path.join(voices_dir, f"{voice_selection}.wav")
+
+            # Appel du worker en sous-processus, SANS charger le modèle dans ce process
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    worker_script,
+                    translated_text,
+                    output_path,
+                    voice_path
+                ],
+                capture_output=True,
+                text=True,
+                timeout=180
+            )
+            if result.returncode != 0:
+                print("stderr:", result.stderr)
+                messages.error(request, f"Erreur génération audio : {result.stderr}")
+                return redirect('home')
+
+            output = result.stdout.strip()
+            print("Sortie du worker :", output)
+            if os.path.exists(output_path):
                 request.session['translated_text'] = translated_text
                 request.session['selected_voice'] = voice_selection
                 request.session['audio_file'] = f"/media/audio/{file_name}.wav"
-                
                 messages.success(request, "Audio généré avec succès !")
-                print("Audio généré avec succès")
             else:
                 messages.error(request, "Erreur lors de la génération de l'audio.")
-                print("Erreur lors de la génération de l'audio")
-                
         except Exception as e:
             messages.error(request, f"Erreur lors de la génération : {str(e)}")
             print(f"Exception: {e}")
-        
+
         return redirect('home')
-    
-    def generate_audio_with_voice(self, text, out_path, file_name, voice):
-        # clear_memory()
-        print("=== generate_audio_with_voice ===")
-        print(f"Text: {text[:50]}...")
-        print(f"Voice: {voice}")
-        """
-        Version adaptée de generate_audio qui utilise directement la voix sélectionnée
-        """
-        try:
-            import torch
-            from TTS.api import TTS
-            from TTS.tts.configs.xtts_config import XttsConfig
-            
-            # Autoriser la classe personnalisée pour le chargement sécurisé
-            torch.serialization.add_safe_globals([XttsConfig])
-            device = "cuda" if torch.cuda.is_available() else "cpu"
-            print(f"Using device: {device}")
-            
-            tts = TTS("tts_models/multilingual/multi-dataset/xtts_v2")
-            tts.to(device)
-            
-            # Chemin vers le fichier de voix sélectionné
-            voices_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), '../controller', 'voices')
-            print(f"voices_dir : {voices_dir}")
-            voice_path = os.path.join(voices_dir, f"{voice}.wav")
-            print(f"voice_path : {voice_path}")
-            
-            if not os.path.exists(voice_path):
-                print(f"Fichier de voix non trouvé : {voice_path}")
-                raise FileNotFoundError(f"Fichier de voix non trouvé : {voice_path}")
-            
-            output_path = f"{out_path}/{file_name}.wav"
-            print(f"output_path : {output_path}")
-            
-            tts.tts_to_file(
-                text=text,
-                file_path=output_path,
-                speaker_wav=voice_path,
-                language="fr"
-            )
-            
-            print(f"Audio généré avec succès : {output_path}")
-            return output_path
-            
-        except Exception as e:
-            print(f"Erreur lors de la génération audio : {e}")
-            import traceback
-            print(traceback.format_exc())
-            return None
 
 
 class VoiceRecordingView(TemplateView):
@@ -245,7 +203,7 @@ class SaveRecordingView(TemplateView):
             print(f"Fichier temporaire créé : {temp_path}")
             
             # Traiter l'audio avec ffmpeg
-            voices_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), '../controller', 'voices')
+            voices_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'ask_ur_16th_mommy', 'controller', 'voices')
             os.makedirs(voices_dir, exist_ok=True)
             
             result_message = self.extract_sound_sample(temp_path, os.path.join(voices_dir, safe_voice_name))
@@ -309,7 +267,7 @@ class UploadVoiceView(TemplateView):
             print(f"Fichier uploadé sauvegardé temporairement : {temp_path}")
             
             # Traiter l'audio avec ffmpeg
-            voices_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), '../controller', 'voices')
+            voices_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'ask_ur_16th_mommy', 'controller', 'voices')
             os.makedirs(voices_dir, exist_ok=True)
             
             result_message = self.extract_sound_sample(temp_path, os.path.join(voices_dir, safe_voice_name))
