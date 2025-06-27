@@ -10,4 +10,4 @@ echo "Collecting static files..."
 python manage.py collectstatic --noinput --clear
 
 echo "Starting Gunicorn..."
-exec gunicorn EULA_VAAAGm.wsgi:application --bind 0.0.0.0:8001 --workers 8 --log-level debug --chdir /django_app
+exec gunicorn EULA_VAAAGm.wsgi:application --bind 0.0.0.0:8001 --workers 8 --timeout 300 --log-level debug --chdir /django_app
