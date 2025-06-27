@@ -210,3 +210,4 @@ controller/voices/*.mp3
 *test.py
 *.wav
 notes.txt
+*model
