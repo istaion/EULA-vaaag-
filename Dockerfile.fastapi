@@ -13,7 +13,7 @@ RUN curl -sSL https://install.python-poetry.org | python3 -
 ENV PATH="/root/.local/bin:$PATH"
 
 # Définit le répertoire de travail
-WORKDIR /EULA-vaaag-
+WORKDIR /api_app
 
 # Désactive la création de venv par Poetry
 RUN poetry config virtualenvs.create false
@@ -26,11 +26,9 @@ RUN poetry install --no-interaction --no-ansi --no-root
 RUN pip install playsound==1.3.0
 
 # Copie le code de l'application
-COPY ./api_app /EULA-vaaag-/api_app
-COPY ./model /EULA-vaaag-/model
-COPY ./controller/nlp_controller.py /EULA-vaaag-/controller/nlp_controller.py
+COPY ./api_app /api_app
 
 EXPOSE 8000
 
 # Lance l'application
-CMD ["uvicorn", "api_app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]

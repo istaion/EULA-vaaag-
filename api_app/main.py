@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from api_app.endpoints.translate_endpoint import router as translate_router
+from endpoints.translate_endpoint import router as translate_router
 
 # Créer l'application FastAPI
 app = FastAPI(
