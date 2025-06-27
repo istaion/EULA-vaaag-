@@ -396,6 +396,17 @@
             </div>
             {% endif %}
         </div>
+        <script>
+            function playAudio() {
+                const player = document.getElementById("audioPlayer");
+                if (player) {
+                    player.style.display = "block"; // Optionnel : montre le player après clic
+                    player.play();
+                } else {
+                    alert("Lecteur audio introuvable.");
+                }
+            }
+        </script>
     </main>
 
     <!-- Footer -->
