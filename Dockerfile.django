@@ -19,7 +19,7 @@ RUN curl -sSL https://install.python-poetry.org | python3 -
 ENV PATH="/root/.local/bin:$PATH"
 
 # Définit le répertoire de travail
-WORKDIR /EULA-vaaag-
+WORKDIR /django_app
 
 # Désactive la création de venv par Poetry
 RUN poetry config virtualenvs.create false
@@ -37,16 +37,15 @@ RUN sed -i '/is_local = os.path.isdir(path) or os.path.isfile(path)/a \    kwarg
     /usr/local/lib/python3.11/site-packages/TTS/utils/io.py
 
 # Copie le code de l'application
-COPY ./django_app /EULA-vaaag-/django_app
-COPY ./django_entrypoint.sh /EULA-vaaag-/django_entrypoint.sh
-COPY ./controller /EULA-vaaag-/controller
-COPY ./django_app/ask_ur_16th_mommy/model /EULA-vaaag-/django_app/ask_ur_16th_mommy/model
+COPY ./django_app /django_app
+COPY ./django_entrypoint.sh /django_entrypoint.sh
+COPY ./django_app/model /django_app/model
 
 RUN mkdir -p /root/.local/share/tts/tts_models--multilingual--multi-dataset--xtts_v2/
-COPY ./django_app/ask_ur_16th_mommy/model/xtts_v2/ /root/.local/share/tts/tts_models--multilingual--multi-dataset--xtts_v2/
+COPY ./django_app/model/xtts_v2/ /root/.local/share/tts/tts_models--multilingual--multi-dataset--xtts_v2/
 
 EXPOSE 8001
 
-RUN chmod +x /EULA-vaaag-/django_entrypoint.sh
+RUN chmod +x /django_entrypoint.sh
 
-ENTRYPOINT ["/EULA-vaaag-/django_entrypoint.sh"]
+ENTRYPOINT ["/django_entrypoint.sh"]
