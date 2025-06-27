@@ -76,7 +76,8 @@ class HomeView(TemplateView):
         if model == "mBart":
             new_translation.model_type = "mBart"
             response = httpx.post(
-                "http://localhost:8000/translate_mbart", 
+                # "http://localhost:8000/translate_mbart", 
+                "http://fastapi:8000/translate_mbart", 
                 json={"text": text},
                 timeout=10.0
             )
@@ -86,7 +87,8 @@ class HomeView(TemplateView):
         elif model == "opus":
             new_translation.model_type = "opus"
             response = httpx.post(
-                "http://localhost:8000/translate", 
+                # "http://localhost:8000/translate", 
+                "http://fastapi:8000/translate", 
                 json={"text": text},
                 timeout=10.0
             )
