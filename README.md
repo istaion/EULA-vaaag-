@@ -302,15 +302,23 @@ MIT — Open Source, attribution requise.
 
 Projet réalisé par :
 
-    - Malek B.
-    github.com/istaion
-    malek.boumedine@gmail.com
+<div>
+<h4>Malek B. </h4>
+  <a href="https://github.com/Malek-Boumedine" target="_blank">
+  <img loading="lazy" src="https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white">
+  </a>
+  <a href = "mailto: malek.boumedine@gmail.com"><img loading="lazy" src="https://img.shields.io/badge/Gmail-D14836?style=for-the-badge&logo=gmail&logoColor=white" target="_blank">
+  </a>
+</div>
 
-    - Victor P.
-    github.com/istaion
-    v.poutot@gmail.com
+<div>
+<h4>Victor P.</h4>
+    <a href="https://www.github.com/istaion" target="_blank">
+    <img loading="lazy" src="https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white">
+    <a href = "mailto: v.poutot@gmail.com"><img loading="lazy" src="https://img.shields.io/badge/Gmail-D14836?style=for-the-badge&logo=gmail&logoColor=white" target="_blank"></a>
+</div>
 
-Pour toute question, contactez-moi ou ouvrez une issue GitHub !  
+Pour toute question, contactez-nous ou ouvrez une issue GitHub !  
 _Bon vieux français à tous_ 
 
 

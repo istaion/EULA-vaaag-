@@ -17,7 +17,7 @@ def main():
         from TTS.tts.configs.xtts_config import XttsConfig
         
         # Autoriser la classe personnalisée pour le chargement sécurisé
-        torch.serialization.add_safe_globals([XttsConfig])
+        # torch.serialization.add_safe_globals([XttsConfig])
         device = "cuda" if torch.cuda.is_available() else "cpu"
         
         # Initialiser le modèle TTS
