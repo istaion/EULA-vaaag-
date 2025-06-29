@@ -79,7 +79,7 @@ class HomeView(TemplateView):
                 # "http://localhost:8000/translate_mbart", 
                 "http://fastapi:8000/translate_mbart", 
                 json={"text": text},
-                timeout=10.0
+                timeout=120.0
             )
             if response.status_code != 200:
                 raise RuntimeError(f"Erreur de traduction OPUS: {response.text}")
@@ -90,7 +90,7 @@ class HomeView(TemplateView):
                 # "http://localhost:8000/translate", 
                 "http://fastapi:8000/translate", 
                 json={"text": text},
-                timeout=10.0
+                timeout=120.0
             )
             if response.status_code != 200:
                 raise RuntimeError(f"Erreur de traduction OPUS: {response.text}")
