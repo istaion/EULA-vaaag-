@@ -5,6 +5,7 @@ set -e
 # ---- CONFIGURATION ----
 MARIAN_DIR="api_app/model/marianmt-vieux-francais-model2"
 MBART_DIR="api_app/model/mbart/mbart_model_0928"
+XTTS_DIR="django_app/model/xtts_v2/"
 
 # ---- GÉNÉRATION DES CERTIFICATS SSL (si absents) ----
 if [ ! -f nginx/certs/selfsigned.key ] || [ ! -f nginx/certs/selfsigned.crt ]; then
@@ -19,7 +20,6 @@ else
 fi
 
 # ---- # Installation du huggingface-cli s'il manque ----
-# pip install --no-cache-dir --upgrade huggingface_hub --break-system-packages
 python3 -m venv .venv
 source .venv/bin/activate
 pip install --upgrade pip
@@ -28,14 +28,18 @@ pip install huggingface_hub
 # ---- Téléchargement modèle MarianMT ----
 echo "Téléchargement du modèle MarianMT depuis Hugging Face..."
 mkdir -p "$MARIAN_DIR"
-# python3 -m huggingface_hub download malek-b/mon-marianmt-vieux-francais-model2 --local-dir "$MARIAN_DIR" --local-dir-use-symlinks False
 huggingface-cli download malek-b/mon-marianmt-vieux-francais-model2 --local-dir "$MARIAN_DIR" --local-dir-use-symlinks False
 
 # ---- Téléchargement modèle mBART ----
 echo "Téléchargement du modèle mBART depuis Hugging Face..."
 mkdir -p "$MBART_DIR"
-# python3 -m huggingface_hub download malek-b/mbart_model_0928 --local-dir "$MBART_DIR" --local-dir-use-symlinks False
 huggingface-cli download malek-b/mbart_model_0928 --local-dir "$MBART_DIR" --local-dir-use-symlinks False
+
+# ---- Téléchargement modèle XTTS ----
+echo "Téléchargement du modèle mBART depuis Hugging Face..."
+mkdir -p "$XTTS_DIR"
+huggingface-cli download coqui/XTTS-v2 --local-dir "$XTTS_DIR" --local-dir-use-symlinks False
+
 
 # ---- Service NVIDIA (optionnel) ----
 if systemctl list-units --full -all | grep -Fq 'nvidia-persistenced.service'; then
@@ -47,4 +51,6 @@ fi
 
 # ---- Démarrage Docker ----
 echo "Démarrage des containers Docker..."
+docker pull python:3.11-slim
+docker pull nginx:latest
 docker compose up --build
