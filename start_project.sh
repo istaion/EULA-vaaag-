@@ -18,6 +18,13 @@ else
   echo "Certificat SSL déjà présent, skip génération."
 fi
 
+# ---- # Installation du huggingface-cli s'il manque ----
+# pip install --no-cache-dir --upgrade huggingface_hub --break-system-packages
+python3 -m venv .venv
+source .venv/bin/activate
+pip install --upgrade pip
+pip install huggingface_hub
+
 # ---- Téléchargement modèle MarianMT ----
 echo "Téléchargement du modèle MarianMT depuis Hugging Face..."
 mkdir -p "$MARIAN_DIR"

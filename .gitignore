@@ -214,5 +214,4 @@ scripts/mbart_fast*
 notebooks/Vic/first_model.ipynb
 django_app/ask_ur_16th_mommy/model
 *model
-./nginx/certs/selfsigned.key
-./nginx/certs/selfsigned.crt
+./nginx/certs/*

@@ -119,6 +119,7 @@ Comprend : API REST FastAPI, interface web Django, gestion et génération de 
 ### Prérequis
 
 - **Docker** & **Docker Compose** installés
+- **huggingface_hub** installé
 - (Recommandé) GPU NVIDIA pour accélération CUDA/TTS
 - (Recommandé) Compte [Hugging Face](https://huggingface.co/) pour télécharger les modèles personnalisés
 
