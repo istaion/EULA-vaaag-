@@ -1,6 +1,38 @@
 
 # 🏰 EULA-VAAAG — Traduction & Synthèse Vocale de Vieux Français
 
+## Dépendances principales
+
+![Python](https://img.shields.io/badge/Python-3.11-blue.svg)
+![Django](https://img.shields.io/badge/Django-5.2.3-green.svg)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.115.13-lightgrey.svg)
+![Pandas](https://img.shields.io/badge/Pandas-1.5+-orange.svg)
+![scikit-learn](https://img.shields.io/badge/scikit--learn-1.7.0+-f7941d.svg)
+![torch](https://img.shields.io/badge/Torch-2.0.0+-ee4c2c.svg)
+![TensorFlow](https://img.shields.io/badge/TensorFlow-2.19.0+-ff6f00.svg)
+![Transformers](https://img.shields.io/badge/Transformers-4.37.2-9c27b0.svg)
+![TTS](https://img.shields.io/badge/TTS-0.22.0+-blueviolet.svg)
+![OpenAI](https://img.shields.io/badge/OpenAI-1.88.0+-black.svg)
+![Uvicorn](https://img.shields.io/badge/Uvicorn-0.34.3+-informational.svg)
+![Gunicorn](https://img.shields.io/badge/Gunicorn-23.0.0+-brightgreen.svg)
+![Gradio](https://img.shields.io/badge/Gradio-5.34.1+-blue.svg)
+![HuggingFace Hub](https://img.shields.io/badge/HuggingFace--Hub-0.33.1+-yellow.svg)
+![NLTK](https://img.shields.io/badge/NLTK-3.9.1+-yellowgreen.svg)
+![matplotlib](https://img.shields.io/badge/Matplotlib-3.10.3+-red.svg)
+![Seaborn](https://img.shields.io/badge/Seaborn-0.13.2+-blue.svg)
+![Datasets](https://img.shields.io/badge/Datasets-3.6.0+-teal.svg)
+![SentencePiece](https://img.shields.io/badge/SentencePiece-0.2.0+-purple.svg)
+![Pydantic](https://img.shields.io/badge/Pydantic-2.11.7+-lightblue.svg)
+![dotenv](https://img.shields.io/badge/dotenv-0.9.9+-black.svg)
+![sacrebleu](https://img.shields.io/badge/Sacrebleu-2.5.1+-purple.svg)
+![rouge-score](https://img.shields.io/badge/Rouge--Score-0.1.2+-pink.svg)
+![pyarrow](https://img.shields.io/badge/PyArrow-20.0.0+-lightgrey.svg)
+![ipykernel](https://img.shields.io/badge/IPyKernel-6.29.5+-orange.svg)
+![sacremoses](https://img.shields.io/badge/Sacremoses-0.1.1+-brown.svg)
+![tf-keras](https://img.shields.io/badge/tf--keras-2.19.0+-magenta.svg)
+
+## Description
+
 Projet complet pour la **traduction automatique** du français moderne vers le vieux français, avec **synthèse vocale personnalisable**.
 
 Comprend : API REST FastAPI, interface web Django, gestion et génération de voix (XTTS-v2), entraînement custom des modèles, déploiement Dockerisé avec Nginx/HTTPS.
@@ -10,6 +42,8 @@ Comprend : API REST FastAPI, interface web Django, gestion et génération de 
 ## Sommaire
 
 - [🏰 EULA-VAAAG — Traduction \& Synthèse Vocale de Vieux Français](#-eula-vaaag--traduction--synthèse-vocale-de-vieux-français)
+  - [Dépendances principales](#dépendances-principales)
+  - [Description](#description)
   - [Sommaire](#sommaire)
   - [Fonctionnalités](#fonctionnalités)
   - [Architecture du projet](#architecture-du-projet)
@@ -276,4 +310,7 @@ Projet réalisé par :
     v.poutot@gmail.com
 
 Pour toute question, contactez-moi ou ouvrez une issue GitHub !  
-_Bon vieux français à tous_ 🏰⚜️
+_Bon vieux français à tous_ 
+
+
+[def]: #-eula-vaaag--traduction--synthèse-vocale-de-vieux-français
