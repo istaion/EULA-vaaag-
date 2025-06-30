@@ -192,3 +192,25 @@ cython_debug/
 #  refer to https://docs.cursor.com/context/ignore-files
 .cursorignore
 .cursorindexingignore
+
+*log*
+*t5-old-french
+*t5-old-french-final
+*model_save
+.log*
+logs/
+results/
+scripts/mbart_fast*
+marianmt-vieux-francais*
+mbart_model*
+model/local_f5tts/
+controller/voices/*.wav
+controller/voices/*.mp3
+*test.py
+*.wav
+notes.txt
+scripts/mbart_fast*
+notebooks/Vic/first_model.ipynb
+django_app/ask_ur_16th_mommy/model
+*model
+/nginx/certs/*
